@@ -19,9 +19,62 @@
                 <b-col class="colTasks__header">header</b-col>
                 <b-col class="colTasks__taskActivity">
                     <b-row style="width: 100%" class="colTasks__taskComponent">
-                        <b-col class="colTasks__taskList">1 of 3</b-col>
-                        <b-col class="colTasks__inProgress">2 of 3</b-col>
-                        <b-col class="colTasks__taskDone">3 of 3</b-col>
+                        <b-col class="colTasks__taskList">
+                            <b-col class="colTasks__titleTaskList">
+                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
+                                <span>Task List</span>
+                            </b-col>
+                            <b-col class="colTasks__contentTaskList">
+                                <b-col class="colTasks__taskCard">
+                                    <b-col class="colTasks__cardRowOne">
+                                        <span class="colTasks__cardTitle">Title</span>
+                                        <span class="colTasks__cardSeverity">High Level</span>
+                                    </b-col>
+                                    <b-col class="colTasks__cardRowTwo">
+                                        <p class="colTasks__cardContent">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus quod assumenda enim magni aspernatur, quas doloremque doloribus.</p>
+                                    </b-col>
+                                    <b-col class="colTasks__cardRowThree">
+                                        <span class="colTasks__cardDueDate">Due Aug 22 at 12pm</span>
+                                    </b-col>
+                                </b-col>
+                            </b-col>
+                        </b-col>
+                        <b-col class="colTasks__inProgress">
+                            <b-col class="colTasks__titleInProgress">
+                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
+                                <span>In Progress</span>
+                            </b-col>
+                            <b-col class="colTasks__taskCard">
+                                <b-col class="colTasks__cardRowOne">
+                                    <span class="colTasks__cardTitle">Title</span>
+                                    <span class="colTasks__cardSeverity">High Level</span>
+                                </b-col>
+                                <b-col class="colTasks__cardRowTwo">
+                                    <p class="colTasks__cardContent">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus quod assumenda enim magni aspernatur, quas doloremque doloribus.</p>
+                                </b-col>
+                                <b-col class="colTasks__cardRowThree">
+                                    <span class="colTasks__cardDueDate">Due Aug 22 at 12pm</span>
+                                </b-col>
+                            </b-col>
+                        </b-col>
+                        <b-col class="colTasks__taskDone">
+                            <b-col class="colTasks__titleTaskDone">
+                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
+                                <span>Done</span>
+                            </b-col>
+                            <b-col class="colTasks__taskCard">
+                                <b-col class="colTasks__cardRowOne">
+                                    <span class="colTasks__cardTitle">Title</span>
+                                    <span class="colTasks__cardSeverity">High Level</span>
+                                </b-col>
+                                <b-col class="colTasks__cardRowTwo">
+                                    <p class="colTasks__cardContent">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus quod assumenda enim magni aspernatur, quas doloremque doloribus.</p>
+                                </b-col>
+                                <b-col class="colTasks__cardRowThree">
+                                    <span class="colTasks__cardDueDate">Due Aug 22 at 12pm</span>
+                                </b-col>
+                            </b-col>
+                        </b-col>
                     </b-row>
                 </b-col>
             </b-col>
@@ -30,11 +83,12 @@
 </template>
 
 <script>
-import {BIconCardText} from 'bootstrap-vue'
+import {BIconCardText, BIconPlusSquare} from 'bootstrap-vue'
 export default {
     name: "HomeTask",
     components:{
-        BIconCardText
+        BIconCardText,
+        BIconPlusSquare
     }
 }
 </script>
@@ -124,6 +178,30 @@ export default {
             background-color: purple;
             margin-top: 1rem;
             margin-bottom: 1rem;
+        }
+        &__titleTaskList,
+        &__titleInProgress,
+        &__titleTaskDone{
+            display: flex;   
+            gap: 1rem;
+            background-color:violet;
+            padding: 1rem;
+            font-weight: 600;
+
+        }
+        &__btnCreateTask{
+            width: 1.5rem;
+            height: 1.5rem;
+            cursor: pointer;
+            color: var(--lightGreen);
+        }
+        &__taskCard,
+        &__itemInProgress,
+        &__itemTaskDone{
+            background-color: cyan;
+            margin-top: 1rem;
+            height: 7rem;
+            border-radius: 0.5rem;
         }
     }
 </style>
