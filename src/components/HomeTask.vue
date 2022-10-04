@@ -24,7 +24,7 @@
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
                                 <span>Task List</span>
                             </b-col>
-                            <b-col class="colTasks__contentTaskList">
+                            <!-- <b-col class="colTasks__contentTaskList">
                                 <b-col class="colTasks__taskCard">
                                     <b-col class="colTasks__cardRowOne">
                                         <span class="colTasks__cardTitle">Title</span>
@@ -37,43 +37,64 @@
                                         <span class="colTasks__cardDueDate">Due Aug 22 at 12pm</span>
                                     </b-col>
                                 </b-col>
-                            </b-col>
+                            </b-col> -->
+                            <b-car-group columns class="colTasks__listTaskCard">
+                                <b-card
+                                    title="Card title"
+                                    class="colTasks__taskCard"
+                                >
+                                <span class="colTasks__cardSeverity">Moderate Level</span>
+                                    <b-card-text class="colTasks__cardDescription">
+                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum  
+                                    </b-card-text>
+                                    <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
+                                    <b-card-text class="small text-muted colTasks__cardDate">
+                                        <b-icon-clock class="colTasks__iconCardDate"></b-icon-clock>
+                                        Due Aug 15 at 12 pm
+                                    </b-card-text>
+                                    <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
+                                </b-card>
+                            </b-car-group>
                         </b-col>
                         <b-col class="colTasks__inProgress">
                             <b-col class="colTasks__titleInProgress">
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
                                 <span>In Progress</span>
                             </b-col>
-                            <b-col class="colTasks__taskCard">
-                                <b-col class="colTasks__cardRowOne">
-                                    <span class="colTasks__cardTitle">Title</span>
-                                    <span class="colTasks__cardSeverity">High Level</span>
-                                </b-col>
-                                <b-col class="colTasks__cardRowTwo">
-                                    <p class="colTasks__cardContent">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus quod assumenda enim magni aspernatur, quas doloremque doloribus.</p>
-                                </b-col>
-                                <b-col class="colTasks__cardRowThree">
-                                    <span class="colTasks__cardDueDate">Due Aug 22 at 12pm</span>
-                                </b-col>
-                            </b-col>
+                            <b-car-group columns class="colTasks__listTaskCard">
+                                <b-card
+                                    title="Card title"
+                                    class="colTasks__taskCard"
+                                >
+                                <span class="colTasks__cardSeverity">Moderate Level</span>
+                                    <b-card-text class="colTasks__cardDescription">
+                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum  
+                                    </b-card-text>
+                                    <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
+                                    <b-card-text class="small text-muted colTasks__cardDate">Due Aug 15 at 12 pm</b-card-text>
+                                    <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
+                                </b-card>
+                            </b-car-group>
                         </b-col>
                         <b-col class="colTasks__taskDone">
                             <b-col class="colTasks__titleTaskDone">
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
                                 <span>Done</span>
                             </b-col>
-                            <b-col class="colTasks__taskCard">
-                                <b-col class="colTasks__cardRowOne">
-                                    <span class="colTasks__cardTitle">Title</span>
-                                    <span class="colTasks__cardSeverity">High Level</span>
-                                </b-col>
-                                <b-col class="colTasks__cardRowTwo">
-                                    <p class="colTasks__cardContent">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus quod assumenda enim magni aspernatur, quas doloremque doloribus.</p>
-                                </b-col>
-                                <b-col class="colTasks__cardRowThree">
-                                    <span class="colTasks__cardDueDate">Due Aug 22 at 12pm</span>
-                                </b-col>
-                            </b-col>
+                            <b-car-group columns class="colTasks__listTaskCard">
+                                <b-card
+                                    title="Card title"
+                                    class="colTasks__taskCard"
+                                >
+                                <span class="colTasks__cardSeverity">Moderate Level</span>
+                                    <b-card-text class="colTasks__cardDescription">
+                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum  
+                                    </b-card-text>
+                                    <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
+                                    <b-card-text class="small text-muted colTasks__cardDate">Due Aug 15 at 12 pm</b-card-text>
+                                    <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
+                                </b-card>
+                            </b-car-group>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -83,12 +104,14 @@
 </template>
 
 <script>
-import {BIconCardText, BIconPlusSquare} from 'bootstrap-vue'
+import {BIconCardText, BIconPlusSquare, BIconTrash, BIconClock} from 'bootstrap-vue'
 export default {
     name: "HomeTask",
     components:{
         BIconCardText,
-        BIconPlusSquare
+        BIconPlusSquare,
+        BIconTrash,
+        BIconClock
     }
 }
 </script>
@@ -96,7 +119,13 @@ export default {
 <style lang="scss">
 
     :root{
-        --lightGreen: #2ecc71;
+        --lightGreen: #41d262;
+        --doubleLightGreen: #e6f9ea;
+        --lightRed: #e74c3c;
+        --doubleLightRed: #fbe5e3;
+        --lightOrange: #f39c12;
+        --doubleLightOrange: #fef4e4;
+
     }
 
     *{
@@ -195,13 +224,77 @@ export default {
             cursor: pointer;
             color: var(--lightGreen);
         }
-        &__taskCard,
-        &__itemInProgress,
-        &__itemTaskDone{
-            background-color: cyan;
+        // &__taskCard{
+        //     background-color: cyan;
+        //     margin-top: 1rem;
+        //     height: 7rem;
+        //     border-radius: 0.5rem;
+        // }
+        
+        &__listTaskCard{
             margin-top: 1rem;
-            height: 7rem;
-            border-radius: 0.5rem;
+            display: grid;
+            gap: 1rem;
         }
+
+        &__taskCard{
+            &::before{
+                content:'';
+                position: absolute;
+                background-color: var(--lightOrange);
+                width: 4px;
+                height: 90%;
+                bottom: 0;
+                left:-2px;
+            }
+
+            h4{
+                display: inline-block;
+                background-color: green;
+                width: 60%;
+                text-align: start;
+            }
+            .colTasks__cardSeverity{
+                margin-left: 2rem;
+                background-color: var(--doubleLightOrange);
+                color: var(--lightOrange);
+                font-weight: 600;
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .colTasks__cardDescription{
+                max-height: 4rem;
+                text-align: start;
+            }
+
+            .colTasks__cardOwner{
+                // background-color: #41d262;
+                display: inline-block;
+                text-align: start;
+            }
+
+            .colTasks__iconCardDate{
+                color: var(--lightGreen);
+                margin-right: 0.5rem;
+            }
+
+            .colTasks__cardDate{
+                // background-color: red;
+                display: inline-block;
+                width: 70%;
+            }
+
+            .colTasks__iconDeleteCard{
+                color: var(--lightRed);
+                width: 1.5rem;
+                height: 1.5rem;
+                margin-left: 1rem;
+                cursor: pointer;
+            }
+        } 
+
+
     }
 </style>
