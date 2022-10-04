@@ -6,17 +6,17 @@
     </nav>
     <router-view/> -->
     <!-- <HelloWorld/> -->
-    <HomeTask/>
+    <KanbanHome/>
   </div>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
-import HomeTask from './components/HomeTask.vue'
+import KanbanHome from './components/KanbanHome.vue'
 export default {
   components: {
     // HelloWorld,
-    HomeTask
+    KanbanHome
   }
 }
 </script>

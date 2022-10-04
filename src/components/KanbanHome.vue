@@ -28,21 +28,10 @@
                                 <span>Tasks List</span>
                             </b-col>
                             <b-car-group columns class="colTasks__listTaskCard">
-                                <b-card
-                                    title="Card title"
-                                    class="colTasks__taskCard"
-                                >
-                                <span class="colTasks__cardSeverity">Moderate Level</span>
-                                    <b-card-text class="colTasks__cardDescription">
-                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum  
-                                    </b-card-text>
-                                    <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
-                                    <b-card-text class="small text-muted colTasks__cardDate">
-                                        <b-icon-clock class="colTasks__iconCardDate"></b-icon-clock>
-                                        Due Aug 15 at 12 pm
-                                    </b-card-text>
-                                    <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
-                                </b-card>
+                                <card-task
+                                    content="Meeting on Friday"
+                                ></card-task>
+                                <card-task></card-task>
                             </b-car-group>
                         </b-col>
                         <b-col class="colTasks__inProgress">
@@ -51,18 +40,7 @@
                                 <span>In Progress</span>
                             </b-col>
                             <b-car-group columns class="colTasks__listTaskCard">
-                                <b-card
-                                    title="Card title"
-                                    class="colTasks__taskCard"
-                                >
-                                <span class="colTasks__cardSeverity">Moderate Level</span>
-                                    <b-card-text class="colTasks__cardDescription">
-                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum  
-                                    </b-card-text>
-                                    <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
-                                    <b-card-text class="small text-muted colTasks__cardDate">Due Aug 15 at 12 pm</b-card-text>
-                                    <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
-                                </b-card>
+                                <card-task></card-task>
                             </b-car-group>
                         </b-col>
                         <b-col class="colTasks__taskDone">
@@ -71,18 +49,7 @@
                                 <span>Done</span>
                             </b-col>
                             <b-car-group columns class="colTasks__listTaskCard">
-                                <b-card
-                                    title="Card title"
-                                    class="colTasks__taskCard"
-                                >
-                                <span class="colTasks__cardSeverity">Moderate Level</span>
-                                    <b-card-text class="colTasks__cardDescription">
-                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum  
-                                    </b-card-text>
-                                    <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
-                                    <b-card-text class="small text-muted colTasks__cardDate">Due Aug 15 at 12 pm</b-card-text>
-                                    <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
-                                </b-card>
+                                <card-task></card-task>
                             </b-car-group>
                         </b-col>
                     </b-row>
@@ -93,15 +60,15 @@
 </template>
 
 <script>
-import {BIconListTask, BIconCardText, BIconPlusSquare, BIconTrash, BIconClock} from 'bootstrap-vue'
+import {BIconListTask, BIconCardText, BIconPlusSquare} from 'bootstrap-vue'
+import CardTask from './CardTask';
 export default {
-    name: "HomeTask",
+    name: "KanbanHome",
     components:{
         BIconListTask,
         BIconCardText,
         BIconPlusSquare,
-        BIconTrash,
-        BIconClock
+        CardTask
     }
 }
 </script>
@@ -249,69 +216,84 @@ export default {
             gap: 1rem;
         }
 
-        &__taskCard{
+        // &__taskCard{
 
-            border: 1px solid var(--green);
+        //     border: 1px solid var(--green);
 
-            &::before{
-                content:'';
-                position: absolute;
-                background-color: var(--lightOrange);
-                width: 4px;
-                height: 90%;
-                bottom: 0;
-                left:-2px;
-            }
+        //     &::before{
+        //         content:'';
+        //         position: absolute;
+        //         background-color: var(--lightOrange);
+        //         width: 4px;
+        //         height: 90%;
+        //         bottom: 0;
+        //         left:-2px;
+        //     }
 
-            //-------- Card title --------//
-            h4{
-                display: inline-block;
-                // background-color: green;
-                width: 60%;
-                text-align: start;
-            }
-            //-------- Card title --------//
+        //     //-------- Card title --------//
+        //     h4{
+        //         display: inline-block;
+        //         // background-color: green;
+        //         width: 60%;
+        //         text-align: start;
+        //     }
+        //     //-------- Card title --------//
 
-            .colTasks__cardSeverity{
-                margin-left: 2rem;
-                background-color: var(--doubleLightOrange);
-                color: var(--lightOrange);
-                font-weight: 600;
-                border-radius: 0.5rem;
-                padding: 0.5rem;
-                font-size: 0.7rem;
-            }
+        //     .colTasks__cardSeverity{
+        //         margin-left: 2rem;
+        //         // background-color: var(--doubleLightOrange);
+        //         // color: var(--lightOrange);
+        //         font-weight: 600;
+        //         border-radius: 0.5rem;
+        //         padding: 0.5rem;
+        //         font-size: 0.7rem;
+        //     }
 
-            .colTasks__cardDescription{
-                max-height: 4rem;
-                text-align: start;
-            }
+        //     .colTasks__cardSeverity--low{
+        //         background-color: var(--doubleLightGreen);
+        //         color: var(--lightGreen);
+        //     }
 
-            .colTasks__cardOwner{
-                // background-color: #41d262;
-                display: inline-block;
-                text-align: start;
-            }
+        //     .colTasks__cardSeverity--moderate{
+        //         background-color: var(--doubleLightOrange);
+        //         color: var(--lightOrange);
+        //     }
 
-            .colTasks__iconCardDate{
-                color: var(--lightGreen);
-                margin-right: 0.5rem;
-            }
+        //     .colTasks__cardSeverity--high{
+        //         background-color: var(--doubleLightRed);
+        //         color: var(--lightRed);
+        //     }
 
-            .colTasks__cardDate{
-                // background-color: red;
-                display: inline-block;
-                width: 70%;
-            }
+        //     .colTasks__cardDescription{
+        //         max-height: 4rem;
+        //         text-align: start;
+        //     }
 
-            .colTasks__iconDeleteCard{
-                color: var(--lightRed);
-                width: 1.5rem;
-                height: 1.5rem;
-                margin-left: 1rem;
-                cursor: pointer;
-            }
-        } 
+        //     .colTasks__cardOwner{
+        //         // background-color: #41d262;
+        //         display: inline-block;
+        //         text-align: start;
+        //     }
+
+        //     .colTasks__iconCardDate{
+        //         color: var(--lightGreen);
+        //         margin-right: 0.5rem;
+        //     }
+
+        //     .colTasks__cardDate{
+        //         // background-color: red;
+        //         display: inline-block;
+        //         width: 70%;
+        //     }
+
+        //     .colTasks__iconDeleteCard{
+        //         color: var(--lightRed);
+        //         width: 1.5rem;
+        //         height: 1.5rem;
+        //         margin-left: 1rem;
+        //         cursor: pointer;
+        //     }
+        // } 
 
 
     }
