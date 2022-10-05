@@ -7,14 +7,8 @@
                     <b-icon-list-task class="colProject__iconTitle"></b-icon-list-task>
                 </b-col>
                 <b-col class="colProject__projectList">
-                    <b-col class="colProject__projectItem">
-                        <b-icon-card-text></b-icon-card-text>
-                        Project 1
-                    </b-col>
-                    <b-col class="colProject__projectItem colProject__projectItem--active">
-                        <b-icon-card-text></b-icon-card-text>
-                        Project 2
-                    </b-col>
+                    <button-project :isActive="true"></button-project>
+                    <button-project :isActive="false"></button-project>
                     <b-button variant="success" class="colProject__buttonCreate">Create Project</b-button>
                 </b-col>
             </b-col>
@@ -24,33 +18,38 @@
                     <b-row style="width: 100%" class="colTasks__taskComponent">
                         <b-col class="colTasks__taskList">
                             <b-col class="colTasks__titleTaskList">
-                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
+                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="addTaskList()"></b-icon-plus-square>
                                 <span>Tasks List</span>
                             </b-col>
-                            <b-car-group columns class="colTasks__listTaskCard">
-                                <card-task
-                                    content="Meeting on Friday"
-                                ></card-task>
-                                <card-task></card-task>
-                            </b-car-group>
+                            <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
+                                <card-task 
+                                    :title="task.cardTitle" 
+                                    :severity="task.severity" 
+                                    :content="task.content" 
+                                    :OwnerName="task.OwnerName" 
+                                    :DueDate="task.DueDate"
+                                    @btn-delete="deleteTaskList(task.id)"
+                                    >
+                                </card-task>
+                            </b-card-group>
                         </b-col>
                         <b-col class="colTasks__inProgress">
                             <b-col class="colTasks__titleInProgress">
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
                                 <span>In Progress</span>
                             </b-col>
-                            <b-car-group columns class="colTasks__listTaskCard">
+                            <b-card-group columns class="colTasks__listTaskCard">
                                 <card-task></card-task>
-                            </b-car-group>
+                            </b-card-group>
                         </b-col>
                         <b-col class="colTasks__taskDone">
                             <b-col class="colTasks__titleTaskDone">
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask"></b-icon-plus-square>
-                                <span>Done</span>
+                                <span>Task Done</span>
                             </b-col>
-                            <b-car-group columns class="colTasks__listTaskCard">
+                            <b-card-group columns class="colTasks__listTaskCard">
                                 <card-task></card-task>
-                            </b-car-group>
+                            </b-card-group>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -60,16 +59,98 @@
 </template>
 
 <script>
-import {BIconListTask, BIconCardText, BIconPlusSquare} from 'bootstrap-vue'
+import {BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
+import Swal from 'sweetalert2';
+// import {liveQuery} from 'dexie';
+
+
+import db from '../assets/script/db';
+import ButtonProject from './ButtonProject.vue'
 import CardTask from './CardTask';
 export default {
     name: "KanbanHome",
+    data() {
+        return {
+            TaskListData: [],
+            TaskInProgressData: [],
+            TaskDoneData: []
+        }
+    },
     components:{
         BIconListTask,
-        BIconCardText,
         BIconPlusSquare,
+        ButtonProject,
         CardTask
-    }
+    },
+    methods: {
+        async addTaskList(){
+            try {
+                const id = await db.TaskList.add({
+                    cardTitle: 'Task 1' ,
+                    severity: 'moderate',
+                    content: 'Please pick up the coffee',
+                    OwnerName: 'Fitrie',
+                    DueDate: '27 Aug 22'
+                });
+
+                const data = await db.TaskList.get(id);
+                this.TaskListData.push(data);
+
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        // addTaskList(){
+        //     Swal.fire({
+        //         title: 'Enter your username',
+        //         input: 'text'
+        //     })
+        //     .then(res=>{
+        //         console.log(res);
+        //     });
+        // },
+        async deleteTaskList(id){
+            try {
+                const data = this.TaskListData;
+
+                const alertBox = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                });
+                
+                if(alertBox.isConfirmed){
+                    await db.TaskList.delete(id);
+                    const value = data.find((el)=>{
+                        // console.log(index);
+                        return el.id === id
+                    });
+    
+                    data.splice(data.indexOf(value), 1);
+                }else{
+                    return;
+                }
+
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        
+    },
+    mounted() {
+        const viewTaskListData = async ()=>{
+            const data = await db.TaskList.toArray();
+            data.forEach(el => {
+                this.TaskListData.push(el);
+            });
+        }
+        viewTaskListData();
+    },
 }
 </script>
 
@@ -132,23 +213,6 @@ export default {
             padding-bottom: 1rem;
         }
 
-        &__projectItem{
-            // background-color: goldenrod;
-            // margin: 1rem 0 1rem 0;
-            padding: 0.5rem;
-            margin-bottom: 1rem;
-            color: #000;
-            background-color: #fff;
-            border: 1px solid var(--green);
-            border-radius: 0.5rem;
-            font-weight: 600;
-        }
-
-        &__projectItem--active{
-            color: #fff;
-            background-color: var(--lightGreen);
-        }
-
         &__buttonCreate{
             margin-top: 1rem;
         }
@@ -188,10 +252,6 @@ export default {
             background-color: #fff;
         }
 
-        &__taskList{}
-        &__inProgress{}
-        &__taskDone{}
-
         &__titleTaskList,
         &__titleInProgress,
         &__titleTaskDone{
@@ -215,85 +275,6 @@ export default {
             display: grid;
             gap: 1rem;
         }
-
-        // &__taskCard{
-
-        //     border: 1px solid var(--green);
-
-        //     &::before{
-        //         content:'';
-        //         position: absolute;
-        //         background-color: var(--lightOrange);
-        //         width: 4px;
-        //         height: 90%;
-        //         bottom: 0;
-        //         left:-2px;
-        //     }
-
-        //     //-------- Card title --------//
-        //     h4{
-        //         display: inline-block;
-        //         // background-color: green;
-        //         width: 60%;
-        //         text-align: start;
-        //     }
-        //     //-------- Card title --------//
-
-        //     .colTasks__cardSeverity{
-        //         margin-left: 2rem;
-        //         // background-color: var(--doubleLightOrange);
-        //         // color: var(--lightOrange);
-        //         font-weight: 600;
-        //         border-radius: 0.5rem;
-        //         padding: 0.5rem;
-        //         font-size: 0.7rem;
-        //     }
-
-        //     .colTasks__cardSeverity--low{
-        //         background-color: var(--doubleLightGreen);
-        //         color: var(--lightGreen);
-        //     }
-
-        //     .colTasks__cardSeverity--moderate{
-        //         background-color: var(--doubleLightOrange);
-        //         color: var(--lightOrange);
-        //     }
-
-        //     .colTasks__cardSeverity--high{
-        //         background-color: var(--doubleLightRed);
-        //         color: var(--lightRed);
-        //     }
-
-        //     .colTasks__cardDescription{
-        //         max-height: 4rem;
-        //         text-align: start;
-        //     }
-
-        //     .colTasks__cardOwner{
-        //         // background-color: #41d262;
-        //         display: inline-block;
-        //         text-align: start;
-        //     }
-
-        //     .colTasks__iconCardDate{
-        //         color: var(--lightGreen);
-        //         margin-right: 0.5rem;
-        //     }
-
-        //     .colTasks__cardDate{
-        //         // background-color: red;
-        //         display: inline-block;
-        //         width: 70%;
-        //     }
-
-        //     .colTasks__iconDeleteCard{
-        //         color: var(--lightRed);
-        //         width: 1.5rem;
-        //         height: 1.5rem;
-        //         margin-left: 1rem;
-        //         cursor: pointer;
-        //     }
-        // } 
 
 
     }

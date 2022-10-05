@@ -1,20 +1,24 @@
 <template lang="">
     <div>
         <b-card
-            title="Card title"
+            :title="title"
             class="colTasks__taskCard"
         >
-        <span class="colTasks__cardSeverity colTasks__cardSeverity--moderate">Moderate Level</span>
+        <span class="colTasks__cardSeverity colTasks__cardSeverity--moderate">
+            {{severity}}
+        </span>
             <b-card-text class="colTasks__cardDescription">
                 <!-- Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum   -->
                 {{content}}
             </b-card-text>
-            <b-card-text class="small text-muted colTasks__cardOwner">John</b-card-text>
+            <b-card-text class="small text-muted colTasks__cardOwner">
+                {{OwnerName}}
+            </b-card-text>
             <b-card-text class="small text-muted colTasks__cardDate">
                 <b-icon-clock class="colTasks__iconCardDate"></b-icon-clock>
-                Due Aug 15 at 12 pm
+                {{DueDate}}
             </b-card-text>
-            <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard"></b-icon-trash>
+            <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard" @click="onClick()"></b-icon-trash>
         </b-card>
     </div>
 </template>
@@ -39,15 +43,13 @@ export default {
         },
         OwnerName: String,
         DueDate: String
-    }
-    // props: [
-    //     'id',
-    //     'title',
-    //     'severity',
-    //     'content',
-    //     'OwnerName',
-    //     'DueDate',
-    // ]
+    },
+    methods: {
+        onClick(){
+            this.$emit('btn-delete');
+        }
+    },
+    emits: ['btn-delete']
 }
 </script>
 
