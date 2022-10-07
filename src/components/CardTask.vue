@@ -1,7 +1,7 @@
 <template lang="">
     <div>
         <b-card
-        draggable
+            draggable
             :title="title"
             class="colTasks__taskCard"
         >
@@ -32,7 +32,6 @@ export default {
         BIconClock
     },
     props: {
-        totalData: Number,
         id: Number,
         title: String,
         severity: String,
@@ -58,51 +57,12 @@ export default {
             }
 
         },
-        changeBorderBefore(){
-            const borderColor = ['#41d262', '#f39c12', '#e74c3c'];
-            
-            const lowClass = document.querySelector('.colTasks__cardSeverity--low');
-            const moderateClass = document.querySelector('.colTasks__cardSeverity--moderate');
-            const highClass = document.querySelector('.colTasks__cardSeverity--high');
-
-            // switch(this.severity){
-            //     case 'Low':
-            //         lowClass.style.setProperty('--beforeBorder', borderColor[0]);
-            //         break;
-            //     case 'Moderate':
-            //         moderateClass.style.setProperty('--beforeBorder', borderColor[1]);
-            //         break;
-            //     case 'High':
-            //         highClass.style.setProperty('--beforeBorder', borderColor[2]);
-            //         break;
-            //     default:
-            //         highClass.style.setProperty('--beforeBorder', borderColor[2]);
-                    
-            // }
-
-            if(this.severity === 'Low'){
-                lowClass.style.setProperty('--beforeBorder', borderColor[0]);
-            }
-
-            if(this.severity === 'Moderate'){
-                moderateClass.style.setProperty('--beforeBorder', borderColor[1]);
-            }
-
-            if(this.severity === 'High'){
-                highClass.style.setProperty('--beforeBorder', borderColor[2]);
-            }
-
-        },
         onClick(){
             this.$emit('btn-delete');
         }
     },
     mounted() {
         this.changeSeverityClass();
-        this.changeBorderBefore();
-    },
-    updated() {
-        this.changeBorderBefore();
     },
     emits: ['btn-delete']
 }
@@ -117,26 +77,25 @@ export default {
             border: 1px solid var(--green);
             cursor: grab;
 
-            // &::before{
-            //     content:'';
-            //     position: absolute;
-            //     background-color: var(--beforeBorder);
-            //     width: 4px;
-            //     height: 90%;
-            //     bottom: 0;
-            //     left:-2px;
-            // }
-
             .colTasks__cardSeverity--low::before,
             .colTasks__cardSeverity--moderate::before,
             .colTasks__cardSeverity--high::before{
                 content:'';
                 position: absolute;
-                background-color: var(--beforeBorder);
                 width: 4px;
                 height: 90%;
                 bottom: 0;
                 left:-2px;
+            }
+
+            .colTasks__cardSeverity--low::before{
+                background-color: var(--lightGreen);
+            }
+            .colTasks__cardSeverity--moderate::before{
+                background-color: var(--lightOrange);
+            }
+            .colTasks__cardSeverity--high::before{
+                background-color: var(--lightRed);
             }
 
             //-------- Card title --------//

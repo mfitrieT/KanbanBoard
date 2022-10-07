@@ -292,7 +292,6 @@
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
                                 <card-task 
-                                    :totalData="TaskListData.length"
                                     :title="task.cardTitle" 
                                     :severity="task.severity" 
                                     :content="task.content" 
@@ -310,7 +309,6 @@
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskInProgressData" :key="task.id">
                                 <card-task 
-                                    :totalData="TaskInProgressData.length"
                                     :title="task.cardTitle" 
                                     :severity="task.severity" 
                                     :content="task.content" 
@@ -328,7 +326,6 @@
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskDoneData" :key="task.id">
                                 <card-task 
-                                    :totalData="TaskDoneData.length"
                                     :title="task.cardTitle" 
                                     :severity="task.severity" 
                                     :content="task.content" 
