@@ -1,6 +1,99 @@
 <template>
     <div>
+        <div :class="bodyDarkClass()">
+        </div>
         <b-row class="KanbanBody">
+            <b-form :class="formClass()" @submit.prevent="submitData()">
+                <b-icon-plus-circle title="Close" class="formTaskInput__btnClose" @click="btnClickCloseInputForm()"></b-icon-plus-circle>
+                <b-form-group
+                    id="formTaskInput__groupCardTitle"
+                    class="formTaskInput__groupCardTitle"
+                    label="Card Title"
+                    label-for="formTaskInput__cardTitle"
+                >
+                    <b-form-input
+                        id="formTaskInput__cardTitle"
+                        class="formTaskInput__cardTitle"
+                        v-model="formInputData.Title"
+                        type="text"
+                        placeholder="Card title"
+                        required
+                    >
+                    </b-form-input>
+                    
+                </b-form-group>
+                <b-form-group
+                    id="input-group-1"
+                    label="Severity"
+                    label-for="input-1"
+                >
+                    <b-form-select
+                        id="input-1"
+                        class="formTaskInput__cardSeverity"
+                        v-model="formInputData.Severity"
+                        :options="taskSeverityOptions"
+                        required
+                    >
+                    </b-form-select>
+                    
+                </b-form-group>
+                <b-form-group
+                    id="input-group-1"
+                    label="Task Details"
+                    label-for="input-1"
+                >
+                    <b-form-input
+                        id="input-1"
+                        class="formTaskInput__cardDetails"
+                        v-model="formInputData.Details"
+                        type="text"
+                        placeholder="Task Details"
+                        required
+                    >
+                    </b-form-input>
+                    
+                </b-form-group>
+                <b-form-group
+                    id="input-group-1"
+                    label="Owner Name"
+                    label-for="input-1"
+                >
+                    <b-form-input
+                        id="input-1"
+                        class="formTaskInput__cardOwnerName"
+                        v-model="formInputData.OwnerName"
+                        type="text"
+                        placeholder="Owner Name"
+                        required
+                    >
+                    </b-form-input>
+                    
+                </b-form-group>
+                <b-form-group
+                    id="input-group-1"
+                    label="Due Date"
+                    label-for="input-1"
+                >
+                    <b-form-input
+                        id="input-1"
+                        class="formTaskInput__cardDate"
+                        v-model="formInputData.DueDate"
+                        type="date"
+                        placeholder="Due Date"
+                        required
+                    >
+                    </b-form-input>
+                    
+                </b-form-group>
+                <b-button 
+                    class="formTaskInput__btnSubmit" 
+                    type="submit" 
+                    variant="primary" 
+                    >
+                        Submit
+                </b-button>
+            </b-form>
+            
             <b-col class="colProject">
                 <b-col class="colProject__title">
                     Kanban
@@ -18,7 +111,7 @@
                     <b-row style="width: 100%" class="colTasks__taskComponent">
                         <b-col class="colTasks__taskList">
                             <b-col class="colTasks__titleTaskList">
-                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="addTaskList()"></b-icon-plus-square>
+                                <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm()"></b-icon-plus-square>
                                 <span>Tasks List</span>
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
@@ -59,8 +152,10 @@
 </template>
 
 <script>
-import {BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
+import {BIconPlusCircle, BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
 import Swal from 'sweetalert2';
+import Toastify from 'toastify-js';
+import moment from 'moment';
 // import {liveQuery} from 'dexie';
 
 
@@ -71,44 +166,74 @@ export default {
     name: "KanbanHome",
     data() {
         return {
+            closeInputClass: ['formTaskInput', 'formTaskInput formTaskInput--close', 'bodyDark', 'bodyDark bodyDark--close'],
+            formInputOpen: 'formTaskInput',
+            bodyDarkOpen: 'bodyDark',
+            taskSeverityOptions: ['Low','Moderate','High'],
+            formInputData: {
+                Title: '',
+                Severity: '',
+                Details: '',
+                OwnerName: '',
+                DueDate: '',
+            },
             TaskListData: [],
             TaskInProgressData: [],
             TaskDoneData: []
         }
     },
     components:{
+        BIconPlusCircle,
         BIconListTask,
         BIconPlusSquare,
         ButtonProject,
         CardTask
     },
     methods: {
-        async addTaskList(){
+        btnClickCloseInputForm(){           
+            this.closeForm();
+        },
+        bodyDarkClass(){
+            return `${this.bodyDarkOpen}`;
+        },
+        formClass(){
+            return `${this.formInputOpen}`;
+        },
+        openForm(){
+            this.formInputOpen = this.closeInputClass[0];
+            this.bodyDarkOpen = this.closeInputClass[2];
+        },
+        closeForm(){
+            this.formInputOpen = this.closeInputClass[1];
+            this.bodyDarkOpen = this.closeInputClass[3];
+        },
+        async submitData(){
             try {
                 const id = await db.TaskList.add({
-                    cardTitle: 'Task 1' ,
-                    severity: 'moderate',
-                    content: 'Please pick up the coffee',
-                    OwnerName: 'Fitrie',
-                    DueDate: '27 Aug 22'
+                    cardTitle: this.formInputData.Title ,
+                    severity: this.formInputData.Severity,
+                    content: this.formInputData.Details,
+                    OwnerName: this.formInputData.OwnerName,
+                    DueDate: moment(this.formInputData.DueDate).format("MMM Do YY"),
                 });
 
                 const data = await db.TaskList.get(id);
                 this.TaskListData.push(data);
+                this.toastDone('Task Added!');
+                this.clearTheForm();
 
             } catch (error) {
                 console.log(error);
             }
+            this.closeForm();
         },
-        // addTaskList(){
-        //     Swal.fire({
-        //         title: 'Enter your username',
-        //         input: 'text'
-        //     })
-        //     .then(res=>{
-        //         console.log(res);
-        //     });
-        // },
+        clearTheForm(){
+            Object
+                .keys(this.formInputData)
+                .forEach(key =>{
+                    this.formInputData[key] = '';
+                })
+        },
         async deleteTaskList(id){
             try {
                 const data = this.TaskListData;
@@ -131,6 +256,7 @@ export default {
                     });
     
                     data.splice(data.indexOf(value), 1);
+                    this.toastDone('Delete Successful!');
                 }else{
                     return;
                 }
@@ -139,10 +265,22 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+        toastDone(toastText){
+            Toastify({
+                text: toastText,
+                className: "info",
+                style: {
+                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                }
+            }).showToast();
         }
         
     },
     mounted() {
+        this.formInputOpen = this.closeInputClass[1];
+        this.bodyDarkOpen = this.closeInputClass[3];
+        
         const viewTaskListData = async ()=>{
             const data = await db.TaskList.toArray();
             data.forEach(el => {
@@ -155,6 +293,7 @@ export default {
 </script>
 
 <style lang="scss">
+    @import "toastify-js/src/toastify.css";
 
     :root{
         --softBorderColor: #d5d5d5;
@@ -165,6 +304,7 @@ export default {
         --doubleLightRed: #fbe5e3;
         --lightOrange: #f39c12;
         --doubleLightOrange: #fef4e4;
+        --beforeBorder: #fff;
 
     }
 
@@ -172,10 +312,64 @@ export default {
         font-family: 'Lato', sans-serif;
         font-size: 1rem;
     }
+
+    .bodyDark{
+        position: absolute;
+        z-index: 4;
+        height: 100vh;
+        width: 100vw;
+        background-color: #000;
+        opacity: 50%;
+    }
+
+    .bodyDark--close{
+        display: none;
+    }
     
     .KanbanBody{
         margin-left: 0;
         height: 100vh;
+        position: relative;
+    }
+
+    .formTaskInput{
+
+        &__btnClose{
+            cursor: pointer;
+            transform: rotate(40deg);
+            color: red; 
+            position: absolute;
+            left: 90%;
+            bottom: 90%;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        position: absolute;
+        z-index: 5;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        background-color: #41d262;
+        border-radius: 0.5rem;
+        padding: 3rem;
+        width: 50%;
+        text-align: start;
+
+        &__cardTitle,
+        &__cardSeverity,
+        &__cardDetails,
+        &__cardOwnerName,
+        &__cardDate{
+            // width: 50%;
+            // margin-left: auto;
+            // margin-right: auto;
+        }
+    }
+
+    .formTaskInput--close{
+        display: none;
     }
 
     .colProject,
@@ -191,7 +385,6 @@ export default {
         &__projectList{
             border: 1px solid var(--softBorderColor);
         }
-
 
         &__title{
             // background-color: red;

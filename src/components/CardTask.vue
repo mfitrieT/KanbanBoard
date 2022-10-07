@@ -1,11 +1,12 @@
 <template lang="">
     <div>
         <b-card
+        draggable
             :title="title"
             class="colTasks__taskCard"
         >
-        <span class="colTasks__cardSeverity colTasks__cardSeverity--moderate">
-            {{severity}}
+        <span :class="changeSeverityClass()">
+            {{severity}} Level
         </span>
             <b-card-text class="colTasks__cardDescription">
                 <!-- Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum   -->
@@ -16,7 +17,7 @@
             </b-card-text>
             <b-card-text class="small text-muted colTasks__cardDate">
                 <b-icon-clock class="colTasks__iconCardDate"></b-icon-clock>
-                {{DueDate}}
+                Due {{DueDate}}
             </b-card-text>
             <b-icon-trash title="Delete Card" class="colTasks__iconDeleteCard" @click="onClick()"></b-icon-trash>
         </b-card>
@@ -24,7 +25,7 @@
 </template>
 
 <script>
-import {BIconTrash, BIconClock} from 'bootstrap-vue'
+import {BIconTrash, BIconClock} from 'bootstrap-vue';
 export default {
     name: 'CardTask',
     components: {
@@ -45,9 +46,46 @@ export default {
         DueDate: String
     },
     methods: {
+        changeSeverityClass(){
+            if(this.severity === 'Low'){
+                    return 'colTasks__cardSeverity colTasks__cardSeverity--low';
+            }
+            if(this.severity === 'Moderate'){
+                    return 'colTasks__cardSeverity colTasks__cardSeverity--moderate';
+            }
+            if(this.severity === 'High'){
+                return 'colTasks__cardSeverity colTasks__cardSeverity--high';
+            }
+        },
+        changeBorderBefore(){
+            const borderColor = ['#41d262', '#f39c12', '#e74c3c'];
+            
+            const lowClass = document.querySelector('.colTasks__cardSeverity--low');
+            const moderateClass = document.querySelector('.colTasks__cardSeverity--moderate');
+            const highClass = document.querySelector('.colTasks__cardSeverity--high');
+            console.log(highClass);
+
+
+            switch(this.severity){
+                case 'Low':
+                    lowClass.style.setProperty('--beforeBorder', borderColor[0]);
+                    break;
+                case 'Moderate':
+                    moderateClass.style.setProperty('--beforeBorder', borderColor[1]);
+                    break;
+                case 'High':
+                    highClass.style.setProperty('--beforeBorder', borderColor[2]);
+                    break;
+            }
+
+        },
         onClick(){
             this.$emit('btn-delete');
         }
+    },
+    mounted() {
+        this.changeSeverityClass();
+        this.changeBorderBefore();
     },
     emits: ['btn-delete']
 }
@@ -60,11 +98,24 @@ export default {
         &__taskCard{
 
             border: 1px solid var(--green);
+            cursor: grab;
 
-            &::before{
+            // &::before{
+            //     content:'';
+            //     position: absolute;
+            //     background-color: var(--beforeBorder);
+            //     width: 4px;
+            //     height: 90%;
+            //     bottom: 0;
+            //     left:-2px;
+            // }
+
+            .colTasks__cardSeverity--low::before,
+            .colTasks__cardSeverity--moderate::before,
+            .colTasks__cardSeverity--high::before{
                 content:'';
                 position: absolute;
-                background-color: var(--lightOrange);
+                background-color: var(--beforeBorder);
                 width: 4px;
                 height: 90%;
                 bottom: 0;
