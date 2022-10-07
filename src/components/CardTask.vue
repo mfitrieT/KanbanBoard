@@ -9,7 +9,6 @@
             {{severity}} Level
         </span>
             <b-card-text class="colTasks__cardDescription">
-                <!-- Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum   -->
                 {{content}}
             </b-card-text>
             <b-card-text class="small text-muted colTasks__cardOwner">
@@ -33,6 +32,7 @@ export default {
         BIconClock
     },
     props: {
+        totalData: Number,
         id: Number,
         title: String,
         severity: String,
@@ -48,14 +48,15 @@ export default {
     methods: {
         changeSeverityClass(){
             if(this.severity === 'Low'){
-                    return 'colTasks__cardSeverity colTasks__cardSeverity--low';
+                return 'colTasks__cardSeverity colTasks__cardSeverity--low';
             }
             if(this.severity === 'Moderate'){
-                    return 'colTasks__cardSeverity colTasks__cardSeverity--moderate';
+                return 'colTasks__cardSeverity colTasks__cardSeverity--moderate';
             }
             if(this.severity === 'High'){
                 return 'colTasks__cardSeverity colTasks__cardSeverity--high';
             }
+
         },
         changeBorderBefore(){
             const borderColor = ['#41d262', '#f39c12', '#e74c3c'];
@@ -64,16 +65,31 @@ export default {
             const moderateClass = document.querySelector('.colTasks__cardSeverity--moderate');
             const highClass = document.querySelector('.colTasks__cardSeverity--high');
 
-            switch(this.severity){
-                case 'Low':
-                    lowClass.style.setProperty('--beforeBorder', borderColor[0]);
-                    break;
-                case 'Moderate':
-                    moderateClass.style.setProperty('--beforeBorder', borderColor[1]);
-                    break;
-                case 'High':
-                    highClass.style.setProperty('--beforeBorder', borderColor[2]);
-                    break;
+            // switch(this.severity){
+            //     case 'Low':
+            //         lowClass.style.setProperty('--beforeBorder', borderColor[0]);
+            //         break;
+            //     case 'Moderate':
+            //         moderateClass.style.setProperty('--beforeBorder', borderColor[1]);
+            //         break;
+            //     case 'High':
+            //         highClass.style.setProperty('--beforeBorder', borderColor[2]);
+            //         break;
+            //     default:
+            //         highClass.style.setProperty('--beforeBorder', borderColor[2]);
+                    
+            // }
+
+            if(this.severity === 'Low'){
+                lowClass.style.setProperty('--beforeBorder', borderColor[0]);
+            }
+
+            if(this.severity === 'Moderate'){
+                moderateClass.style.setProperty('--beforeBorder', borderColor[1]);
+            }
+
+            if(this.severity === 'High'){
+                highClass.style.setProperty('--beforeBorder', borderColor[2]);
             }
 
         },
@@ -83,6 +99,9 @@ export default {
     },
     mounted() {
         this.changeSeverityClass();
+        this.changeBorderBefore();
+    },
+    updated() {
         this.changeBorderBefore();
     },
     emits: ['btn-delete']

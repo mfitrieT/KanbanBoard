@@ -292,12 +292,13 @@
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
                                 <card-task 
+                                    :totalData="TaskListData.length"
                                     :title="task.cardTitle" 
                                     :severity="task.severity" 
                                     :content="task.content" 
                                     :OwnerName="task.OwnerName" 
                                     :DueDate="task.DueDate"
-                                    @btn-delete="deleteTaskList(task.id)"
+                                    @btn-delete="deleteTaskList('taskList', task.id)"
                                     >
                                 </card-task>
                             </b-card-group>
@@ -309,12 +310,13 @@
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskInProgressData" :key="task.id">
                                 <card-task 
+                                    :totalData="TaskInProgressData.length"
                                     :title="task.cardTitle" 
                                     :severity="task.severity" 
                                     :content="task.content" 
                                     :OwnerName="task.OwnerName" 
                                     :DueDate="task.DueDate"
-                                    @btn-delete="deleteTaskList(task.id)"
+                                    @btn-delete="deleteTaskList('taskInProgress', task.id)"
                                     >
                                 </card-task>
                             </b-card-group>
@@ -326,12 +328,13 @@
                             </b-col>
                             <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskDoneData" :key="task.id">
                                 <card-task 
+                                    :totalData="TaskDoneData.length"
                                     :title="task.cardTitle" 
                                     :severity="task.severity" 
                                     :content="task.content" 
                                     :OwnerName="task.OwnerName" 
                                     :DueDate="task.DueDate"
-                                    @btn-delete="deleteTaskList(task.id)"
+                                    @btn-delete="deleteTaskList('taskDone', task.id)"
                                     >
                                 </card-task>
                             </b-card-group>
@@ -413,54 +416,73 @@ export default {
         closeForm(){
             this.formInputOpen = this.closeInputClass[1];
             this.bodyDarkOpen = this.closeInputClass[3];
-            this.clearTheForm();
+            // this.clearTheForm();
         },
-        async submitFormDataToDB(form){
-                const id = await db.TaskList.add({
-                    cardTitle: form.Title ,
-                    severity: form.Severity,
-                    content: form.Details,
-                    OwnerName: form.OwnerName,
-                    DueDate: moment(form.DueDate).format("MMM Do YY"),
-                });
+        async submitFormDataToDB(formType, form){
 
-                return await db.TaskList.get(id);
+                if(formType === 'taskList'){
+                    const id = await db.TaskList.add({
+                        cardTitle: form.Title ,
+                        severity: form.Severity,
+                        content: form.Details,
+                        OwnerName: form.OwnerName,
+                        DueDate: moment(form.DueDate).format("MMM Do YY"),
+                    });
+                    return await db.TaskList.get(id);
+                }
+
+                if(formType === 'taskInProgress'){
+                    const id = await db.InProgress.add({
+                        cardTitle: form.Title ,
+                        severity: form.Severity,
+                        content: form.Details,
+                        OwnerName: form.OwnerName,
+                        DueDate: moment(form.DueDate).format("MMM Do YY"),
+                    });
+                    return await db.InProgress.get(id);
+                }
+
+                if(formType === 'taskDone'){
+                    const id = await db.TaskDone.add({
+                        cardTitle: form.Title ,
+                        severity: form.Severity,
+                        content: form.Details,
+                        OwnerName: form.OwnerName,
+                        DueDate: moment(form.DueDate).format("MMM Do YY"),
+                    });
+                    return await db.TaskDone.get(id);
+                }
+
         },
         async submitTaskData(){
             try {
+
+                const formType = ['taskList','taskInProgress','taskDone'];
+
                 if(this.whichFormIsOpen === ''){
                     return;
                 }
 
-                if(this.whichFormIsOpen === 'taskList'){    
-                    const dataId = await this.submitFormDataToDB(this.formInputData.TaskListInput);
+                if(this.whichFormIsOpen === formType[0]){    
+                    const dataId = await this.submitFormDataToDB(formType[0], this.formInputData.TaskListInput);
                     this.TaskListData.push(dataId);
                     this.toastDone('Task list Added!');
-
-                    // console.log('Task List');
-                    // console.log(this.formInputData.TaskListInput);
 
                     this.whichFormIsOpen = '';
                 }
                 
-                if(this.whichFormIsOpen === 'taskInProgress'){
-                    const dataId = await this.submitFormDataToDB(this.formInputData.TaskInProgressInput);
+                if(this.whichFormIsOpen === formType[1]){
+                    const dataId = await this.submitFormDataToDB(formType[1], this.formInputData.TaskInProgressInput);
                     this.TaskInProgressData.push(dataId);
                     this.toastDone('Task in progress Added!');
 
-                    // console.log('Task In Progress');
-                    // console.log(this.formInputData.TaskInProgressInput);
-                    
                     this.whichFormIsOpen = '';
                 }
-                if(this.whichFormIsOpen === 'taskDone'){
-                    const dataId = await this.submitFormDataToDB(this.formInputData.TaskDoneInput);
+                if(this.whichFormIsOpen === formType[2]){
+                    const dataId = await this.submitFormDataToDB(formType[2], this.formInputData.TaskDoneInput);
                     this.TaskDoneData.push(dataId);
                     this.toastDone('Task done Added!');
 
-                    // console.log('Task Done');
-                    // console.log(this.formInputData.TaskDoneInput);
-                    
                     this.whichFormIsOpen = '';
                 }
 
@@ -478,30 +500,86 @@ export default {
         //             this.formInputData.TaskListInput[key] = '';
         //         })
         // },
-        async deleteTaskList(id){
+        async deleteTaskList(formType, id){
             try {
-                const data = this.TaskListData;
+                const formTypeList = ['taskList','taskInProgress','taskDone'];
 
-                const alertBox = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                });
-                
-                if(alertBox.isConfirmed){
-                    await db.TaskList.delete(id);
-                    const value = data.find((el)=>{
-                        return el.id === id
-                    });
+                if(formType === formTypeList[0]){
+                    const data = this.TaskListData;
     
-                    data.splice(data.indexOf(value), 1);
-                    this.toastDone('Delete Successful!');
-                }else{
-                    return;
+                    const alertBox = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    });
+                    
+                    if(alertBox.isConfirmed){
+                        await db.TaskList.delete(id);
+                        const value = data.find((el)=>{
+                            return el.id === id
+                        });
+        
+                        data.splice(data.indexOf(value), 1);
+                        this.toastDone('Delete Successful!');
+                    }else{
+                        return;
+                    }
+                }
+
+                if(formType === formTypeList[1]){
+                    const data = this.TaskInProgressData;
+    
+                    const alertBox = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    });
+                    
+                    if(alertBox.isConfirmed){
+                        await db.InProgress.delete(id);
+                        const value = data.find((el)=>{
+                            return el.id === id
+                        });
+        
+                        data.splice(data.indexOf(value), 1);
+                        this.toastDone('Delete Successful!');
+                    }else{
+                        return;
+                    }
+                }
+
+                if(formType === formTypeList[2]){
+                    const data = this.TaskDoneData;
+    
+                    const alertBox = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    });
+                    
+                    if(alertBox.isConfirmed){
+                        await db.TaskDone.delete(id);
+                        const value = data.find((el)=>{
+                            return el.id === id
+                        });
+        
+                        data.splice(data.indexOf(value), 1);
+                        this.toastDone('Delete Successful!');
+                    }else{
+                        return;
+                    }
                 }
 
 
