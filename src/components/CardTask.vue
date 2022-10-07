@@ -63,8 +63,6 @@ export default {
             const lowClass = document.querySelector('.colTasks__cardSeverity--low');
             const moderateClass = document.querySelector('.colTasks__cardSeverity--moderate');
             const highClass = document.querySelector('.colTasks__cardSeverity--high');
-            console.log(highClass);
-
 
             switch(this.severity){
                 case 'Low':
