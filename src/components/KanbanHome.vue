@@ -764,6 +764,7 @@ export default {
             margin-left: 0;
             gap: 1rem;
         }
+
         &__taskList,
         &__inProgress,
         &__taskDone{
@@ -771,7 +772,36 @@ export default {
             margin-bottom: 1rem;
             margin-top: 1rem;
             background-color: #fff;
+            max-height: 38rem;
+            overflow-y: auto;
         }
+
+        // Scrollbar
+        ::-webkit-scrollbar{
+            width: 6px;
+            height: 6px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            border-radius: 10px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: rgba(0,0,0,0.2);
+
+            &:hover{
+                background: rgba(0,0,0,0.4);
+            }
+
+            &:active{
+                background: rgba(0,0,0,0.9);
+            }
+        }
+        // Scrollbar
 
         &__titleTaskList,
         &__titleInProgress,
@@ -797,6 +827,14 @@ export default {
             gap: 1rem;
         }
 
-
+        // Media Queries
+        @media screen and (min-width: 1920px) {
+            &__taskList,
+            &__inProgress,
+            &__taskDone{
+                max-height: 50rem;
+            }
+        }
+        // Media Queries
     }
 </style>
