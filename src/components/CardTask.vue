@@ -1,7 +1,6 @@
 <template lang="">
     <div>
         <b-card
-            draggable
             :title="title"
             class="colTasks__taskCard"
         >

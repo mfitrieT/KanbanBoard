@@ -290,51 +290,57 @@
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm('taskList')"></b-icon-plus-square>
                                 <span>Tasks List</span>
                             </b-col>
-                            <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
-                                <card-task 
-                                    :title="task.cardTitle" 
-                                    :severity="task.severity" 
-                                    :content="task.content" 
-                                    :OwnerName="task.OwnerName" 
-                                    :DueDate="task.DueDate"
-                                    @btn-delete="deleteTaskList('taskList', task.id)"
-                                    >
-                                </card-task>
-                            </b-card-group>
+                            <draggable :list="TaskListData" group="tasks">
+                                <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
+                                    <card-task 
+                                        :title="task.cardTitle" 
+                                        :severity="task.severity" 
+                                        :content="task.content" 
+                                        :OwnerName="task.OwnerName" 
+                                        :DueDate="task.DueDate"
+                                        @btn-delete="deleteTaskList('taskList', task.id)"
+                                        >
+                                    </card-task>
+                                </b-card-group>
+                            </draggable>
                         </b-col>
                         <b-col class="colTasks__inProgress">
                             <b-col class="colTasks__titleInProgress">
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm('taskInProgress')"></b-icon-plus-square>
                                 <span>In Progress</span>
                             </b-col>
-                            <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskInProgressData" :key="task.id">
-                                <card-task 
-                                    :title="task.cardTitle" 
-                                    :severity="task.severity" 
-                                    :content="task.content" 
-                                    :OwnerName="task.OwnerName" 
-                                    :DueDate="task.DueDate"
-                                    @btn-delete="deleteTaskList('taskInProgress', task.id)"
-                                    >
-                                </card-task>
-                            </b-card-group>
+                            <draggable :list="TaskInProgressData" group="tasks">
+                                <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskInProgressData" :key="task.id">
+                                    <card-task 
+                                        :title="task.cardTitle" 
+                                        :severity="task.severity" 
+                                        :content="task.content" 
+                                        :OwnerName="task.OwnerName" 
+                                        :DueDate="task.DueDate"
+                                        @btn-delete="deleteTaskList('taskInProgress', task.id)"
+                                        >
+                                    </card-task>
+                                </b-card-group>
+                            </draggable>
                         </b-col>
                         <b-col class="colTasks__taskDone">
                             <b-col class="colTasks__titleTaskDone">
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm('taskDone')"></b-icon-plus-square>
                                 <span>Task Done</span>
                             </b-col>
-                            <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskDoneData" :key="task.id">
-                                <card-task 
-                                    :title="task.cardTitle" 
-                                    :severity="task.severity" 
-                                    :content="task.content" 
-                                    :OwnerName="task.OwnerName" 
-                                    :DueDate="task.DueDate"
-                                    @btn-delete="deleteTaskList('taskDone', task.id)"
-                                    >
-                                </card-task>
-                            </b-card-group>
+                            <draggable :list="TaskDoneData" group="tasks">
+                                <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskDoneData" :key="task.id">
+                                    <card-task 
+                                        :title="task.cardTitle" 
+                                        :severity="task.severity" 
+                                        :content="task.content" 
+                                        :OwnerName="task.OwnerName" 
+                                        :DueDate="task.DueDate"
+                                        @btn-delete="deleteTaskList('taskDone', task.id)"
+                                        >
+                                    </card-task>
+                                </b-card-group>
+                            </draggable>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -348,8 +354,7 @@ import {BIconPlusCircle, BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
 import Swal from 'sweetalert2';
 import Toastify from 'toastify-js';
 import moment from 'moment';
-// import {liveQuery} from 'dexie';
-
+import draggable from 'vuedraggable';
 
 import db from '../assets/script/db';
 import ButtonProject from './ButtonProject.vue'
@@ -388,7 +393,7 @@ export default {
             },
             TaskListData: [],
             TaskInProgressData: [],
-            TaskDoneData: []
+            TaskDoneData: [],
         }
     },
     components:{
@@ -396,6 +401,7 @@ export default {
         BIconListTask,
         BIconPlusSquare,
         ButtonProject,
+        draggable,
         CardTask
     },
     methods: {
@@ -415,6 +421,27 @@ export default {
             this.bodyDarkOpen = this.closeInputClass[3];
             // this.clearTheForm();
         },
+        // handleDraggableComponentChange(){
+        //     console.log('Change');
+        // },
+        // inputDraggableComponentChange(value){
+        //     this.activeProps = value;
+        //     console.log(value);
+        // },
+        // getDraggableComponentData(){
+        //     return {
+        //         on: {
+        //             change: this.handleDraggableComponentChange,
+        //             input: this.inputDraggableComponentChange
+        //         },
+        //         attrs:{
+        //             wrap: true
+        //         },
+        //         props: {
+        //             value: this.activeProps
+        //         }
+        //     }
+        // },
         async submitFormDataToDB(formType, form){
 
                 if(formType === 'taskList'){
@@ -463,7 +490,7 @@ export default {
                 if(this.whichFormIsOpen === formType[0]){    
                     const dataId = await this.submitFormDataToDB(formType[0], this.formInputData.TaskListInput);
                     this.TaskListData.push(dataId);
-                    this.toastDone('Task list Added!');
+                    this.toastDone('Task list added!');
 
                     this.whichFormIsOpen = '';
                 }
@@ -471,14 +498,14 @@ export default {
                 if(this.whichFormIsOpen === formType[1]){
                     const dataId = await this.submitFormDataToDB(formType[1], this.formInputData.TaskInProgressInput);
                     this.TaskInProgressData.push(dataId);
-                    this.toastDone('Task in progress Added!');
+                    this.toastDone('Task in progress added!');
 
                     this.whichFormIsOpen = '';
                 }
                 if(this.whichFormIsOpen === formType[2]){
                     const dataId = await this.submitFormDataToDB(formType[2], this.formInputData.TaskDoneInput);
                     this.TaskDoneData.push(dataId);
-                    this.toastDone('Task done Added!');
+                    this.toastDone('Task done added!');
 
                     this.whichFormIsOpen = '';
                 }
