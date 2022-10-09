@@ -3,7 +3,9 @@
         <div :class="bodyDarkClass()">
         </div>
         <b-row class="KanbanBody">
-            {{valueFromMediator()}}
+            <div style="display: none;">
+                {{valueFromMediator()}}
+            </div>
             <b-form :class="formClass()" @submit.prevent="submitTaskData()">
                 <b-icon-plus-circle title="Close" class="formTaskInput__btnClose" @click="closeForm()"></b-icon-plus-circle>
                 <!-- Title -->
@@ -298,7 +300,7 @@
                                         :severity="task.severity" 
                                         :content="task.content" 
                                         :OwnerName="task.OwnerName" 
-                                        :DueDate="task.DueDate"
+                                        :DueDate="formatDate(task.DueDate)"
                                         @btn-delete="deleteTaskList('taskList', task.id)"
                                         >
                                     </card-task>
@@ -311,13 +313,13 @@
                                 <span>In Progress</span>
                             </b-col>
                             <draggable :list="TaskInProgressData" group="tasks" @change="taskDataChange" @end="taskClassChange">
-                                <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskInProgressData" :key="task.id">
+                                <b-card-group columns class="colTasks__listInProgress" v-for="task in TaskInProgressData" :key="task.id">
                                     <card-task 
                                         :title="task.cardTitle" 
                                         :severity="task.severity" 
                                         :content="task.content" 
                                         :OwnerName="task.OwnerName" 
-                                        :DueDate="task.DueDate"
+                                        :DueDate="formatDate(task.DueDate)"
                                         @btn-delete="deleteTaskList('taskInProgress', task.id)"
                                         >
                                     </card-task>
@@ -330,13 +332,13 @@
                                 <span>Task Done</span>
                             </b-col>
                             <draggable :list="TaskDoneData" group="tasks" @change="taskDataChange" @end="taskClassChange">
-                                <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskDoneData" :key="task.id">
+                                <b-card-group columns class="colTasks__listTaskDone" v-for="task in TaskDoneData" :key="task.id">
                                     <card-task 
                                         :title="task.cardTitle" 
                                         :severity="task.severity" 
                                         :content="task.content" 
                                         :OwnerName="task.OwnerName" 
-                                        :DueDate="task.DueDate"
+                                        :DueDate="formatDate(task.DueDate)"
                                         @btn-delete="deleteTaskList('taskDone', task.id)"
                                         >
                                     </card-task>
@@ -427,6 +429,9 @@ export default {
             this.bodyDarkOpen = this.closeInputClass[3];
             // this.clearTheForm();
         },
+        formatDate(taskDate){
+            return moment(taskDate).format("MMM Do YY");
+        },
         taskDataChange(item){
             // console.log(item);
             const itemRemoved = item.removed;
@@ -464,19 +469,96 @@ export default {
                 toClass
             };
         },
-        valueFromMediator(){
+        async valueFromMediator(){
             if(this.DataChangeListener.classChangeListener.fromClass){
-                const fromClass = this.DataChangeListener.classChangeListener.fromClass;
-                const toClass = this.DataChangeListener.classChangeListener.toClass;
+                const fromTaskClass = ['listTaskCard', 'listInProgress', 'listTaskDone'];
+                const toTaskCardClass = ['taskList','inProgress','taskDone'];
+
+                const fromClass = this.DataChangeListener.classChangeListener.fromClass.split('__')[1];
+                const toClass = this.DataChangeListener.classChangeListener.toClass.split('__')[1];
                 const addedIndex = this.DataChangeListener.dataAddedIndex; 
                 const dataInTask = {...this.DataChangeListener.dataListener}; 
 
                 dataInTask.indexItemAdded = addedIndex;
 
-                console.log(`From class: '${fromClass}', to class: '${toClass}'`);
-                console.log(dataInTask);
+                if(addedIndex === ''){
+                    return;
+                }
 
+                //--------TASK LIST OPERATION--------//
+                if(fromClass === fromTaskClass[0] && toClass === toTaskCardClass[1]){
+
+                    await this.deleteTaskDB(db.TaskList, this.TaskListData, dataInTask.id);
+                    const dataId = this.addObjectDB(db.InProgress, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate);
+                    
+                    this.TaskInProgressData.push(dataId);
+                    this.TaskInProgressData.pop();
+
+                    // console.log(this.TaskInProgressData);
+                    // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+                }
+                if(fromClass === fromTaskClass[0] && toClass === toTaskCardClass[2]){
+                    
+                    await this.deleteTaskDB(db.TaskList, this.TaskListData, dataInTask.id);
+                    const dataId = this.addObjectDB(db.TaskDone, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    this.TaskDoneData.push(dataId);
+                    this.TaskDoneData.pop();
+
+                    // console.log(this.TaskDoneData);
+                    // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+
+                }
+                //--------TASK LIST OPERATION--------//
+
+                //--------TASK IN PROGRESS OPERATION--------//
+                if(fromClass === fromTaskClass[1] && toClass === toTaskCardClass[0]){
+
+                    await this.deleteTaskDB(db.InProgress, this.TaskListData, dataInTask.id);
+                    const dataId = this.addObjectDB(db.TaskList, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    this.TaskListData.push(dataId);
+                    this.TaskListData.pop();
+
+                    // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+
+                }
+                if(fromClass === fromTaskClass[1] && toClass === toTaskCardClass[2]){
+
+                    await this.deleteTaskDB(db.InProgress, this.TaskListData, dataInTask.id);
+                    const dataId = this.addObjectDB(db.TaskDone, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    this.TaskDoneData.push(dataId);
+                    this.TaskDoneData.pop();
+
+                    // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+
+                }
+                //--------TASK IN PROGRESS OPERATION--------//
                 
+                //--------TASK DONE OPERATION--------//
+                if(fromClass === fromTaskClass[2] && toClass === toTaskCardClass[0]){
+
+                    await this.deleteTaskDB(db.TaskDone, this.TaskListData, dataInTask.id);
+                    const dataId = this.addObjectDB(db.TaskList, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    this.TaskListData.push(dataId);
+                    this.TaskListData.pop();
+
+
+                    // console.log(this.TaskListData);
+                    // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+
+                }
+                if(fromClass === fromTaskClass[2] && toClass === toTaskCardClass[1]){
+
+                    await this.deleteTaskDB(db.TaskDone, this.TaskListData, dataInTask.id);
+                    const dataId = this.addObjectDB(db.InProgress, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    this.TaskInProgressData.push(dataId);
+                    this.TaskInProgressData.pop();
+
+                    // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+
+                }
+                //--------TASK DONE OPERATION--------//
+
+                // console.log(dataInTask);
 
                 this.DataChangeListener.classChangeListener = {};
                 this.DataChangeListener.dataListener = {};
@@ -488,42 +570,20 @@ export default {
         async submitFormDataToDB(formType, form){
 
                 if(formType === 'taskList'){
-                    const id = await db.TaskList.add({
-                        cardTitle: form.Title ,
-                        severity: form.Severity,
-                        content: form.Details,
-                        OwnerName: form.OwnerName,
-                        DueDate: moment(form.DueDate).format("MMM Do YY"),
-                    });
-                    return await db.TaskList.get(id);
+                    return await this.addObjectDB(db.TaskList, new Date().getTime(), form.Title, form.Severity, form.Details, form.OwnerName, form.DueDate);
                 }
 
                 if(formType === 'taskInProgress'){
-                    const id = await db.InProgress.add({
-                        cardTitle: form.Title ,
-                        severity: form.Severity,
-                        content: form.Details,
-                        OwnerName: form.OwnerName,
-                        DueDate: moment(form.DueDate).format("MMM Do YY"),
-                    });
-                    return await db.InProgress.get(id);
+                    return await this.addObjectDB(db.InProgress, new Date().getTime(), form.Title, form.Severity, form.Details, form.OwnerName, form.DueDate);
                 }
 
                 if(formType === 'taskDone'){
-                    const id = await db.TaskDone.add({
-                        cardTitle: form.Title ,
-                        severity: form.Severity,
-                        content: form.Details,
-                        OwnerName: form.OwnerName,
-                        DueDate: moment(form.DueDate).format("MMM Do YY"),
-                    });
-                    return await db.TaskDone.get(id);
+                    return await this.addObjectDB(db.TaskDone, new Date().getTime(), form.Title, form.Severity, form.Details, form.OwnerName, form.DueDate);
                 }
 
         },
         async submitTaskData(){
             try {
-
                 const formType = ['taskList','taskInProgress','taskDone'];
 
                 if(this.whichFormIsOpen === ''){
@@ -542,6 +602,8 @@ export default {
                     const dataId = await this.submitFormDataToDB(formType[1], this.formInputData.TaskInProgressInput);
                     this.TaskInProgressData.push(dataId);
                     this.toastDone('Task in progress added!');
+
+                    // console.log(`Date ${moment(this.formInputData.TaskInProgressInput.DueDate)}`);
 
                     this.whichFormIsOpen = '';
                 }
@@ -567,6 +629,17 @@ export default {
         //             this.formInputData.TaskListInput[key] = '';
         //         })
         // },
+        async addObjectDB(TaskDB, taskId, taskTitle, taskSeverity, taskDetails, taskOwnerName, taskDueDate){
+            const id = await TaskDB.add({
+                id: taskId,
+                cardTitle: taskTitle,
+                severity: taskSeverity,
+                content: taskDetails,
+                OwnerName: taskOwnerName,
+                DueDate: taskDueDate,
+            });
+            return await TaskDB.get(id);
+        },
         async deleteTaskList(formType, id){
             try {
                 const formTypeList = ['taskList','taskInProgress','taskDone'];
@@ -585,11 +658,8 @@ export default {
                     });
                     
                     if(alertBox.isConfirmed){
-                        await db.TaskList.delete(id);
-                        const value = data.find((el)=>{
-                            return el.id === id
-                        });
-        
+                        const value = await this.deleteTaskDB(db.TaskList, data, id);
+
                         data.splice(data.indexOf(value), 1);
                         this.toastDone('Delete Successful!');
                     }else{
@@ -611,10 +681,7 @@ export default {
                     });
                     
                     if(alertBox.isConfirmed){
-                        await db.InProgress.delete(id);
-                        const value = data.find((el)=>{
-                            return el.id === id
-                        });
+                        const value = await this.deleteTaskDB(db.InProgress, data, id);
         
                         data.splice(data.indexOf(value), 1);
                         this.toastDone('Delete Successful!');
@@ -637,11 +704,8 @@ export default {
                     });
                     
                     if(alertBox.isConfirmed){
-                        await db.TaskDone.delete(id);
-                        const value = data.find((el)=>{
-                            return el.id === id
-                        });
-        
+                        const value = await this.deleteTaskDB(db.TaskDone, data, id);
+
                         data.splice(data.indexOf(value), 1);
                         this.toastDone('Delete Successful!');
                     }else{
@@ -653,6 +717,12 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+        async deleteTaskDB(TaskDB, TaskData, id){
+            await TaskDB.delete(id);
+            return TaskData.find((el)=>{
+                return el.id === id
+            });
         },
         toastDone(toastText){
             Toastify({
@@ -891,7 +961,10 @@ export default {
             color: var(--lightGreen);
         }
         
-        &__listTaskCard{
+        &__listTaskCard,
+        &__listInProgress,
+        &__listTaskDone
+        {
             margin-top: 1rem;
             display: grid;
             gap: 1rem;

@@ -36,9 +36,9 @@ export default {
         severity: String,
         content: {
             type: String,
-            default(){
-                return 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum'
-            }
+            // default(){
+            //     return 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui recusandae quisquam iure fugiat voluptatum'
+            // }
         },
         OwnerName: String,
         DueDate: String
