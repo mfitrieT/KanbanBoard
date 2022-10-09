@@ -395,8 +395,11 @@ export default {
             TaskListData: [],
             TaskInProgressData: [],
             TaskDoneData: [],
-            dataClassChangeListener: {},
-            dataChangeListener: {}
+            DataChangeListener: {
+                classChangeListener: {},
+                dataListener: {},
+                dataAddedIndex: ''
+            }
         }
     },
     components:{
@@ -436,23 +439,15 @@ export default {
                 // console.log(`Index: ${indexItemRemovedData}`);
                 // console.log(itemRemovedData);
 
-                this.dataChangeListener = {
-                    indexItemRemovedData,
+                this.DataChangeListener.dataListener = {
+                    indexItemRemoved: indexItemRemovedData,
                     ...itemRemovedData
                 };
             }
 
             if(itemAdded){
                 const indexItemAddedData = itemAdded.newIndex;
-                const itemAddedData = {...itemAdded.element};
-
-                // console.log(`Index: ${indexItemAddedData}`);
-                // console.log(itemAddedData);
-
-                this.dataChangeListener = {
-                    indexItemAddedData,
-                    ...itemAddedData
-                };
+                this.DataChangeListener.dataAddedIndex = indexItemAddedData;
             }
 
             
@@ -464,20 +459,30 @@ export default {
             
             // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
             
-            this.dataClassChangeListener = {
+            this.DataChangeListener.classChangeListener = {
                 fromClass,
                 toClass
             };
         },
         valueFromMediator(){
-            if(this.dataClassChangeListener.fromClass){
-                console.log(this.dataClassChangeListener.fromClass);
-                console.log(this.dataClassChangeListener.toClass);
-                console.log(this.dataChangeListener);
+            if(this.DataChangeListener.classChangeListener.fromClass){
+                const fromClass = this.DataChangeListener.classChangeListener.fromClass;
+                const toClass = this.DataChangeListener.classChangeListener.toClass;
+                const addedIndex = this.DataChangeListener.dataAddedIndex; 
+                const dataInTask = {...this.DataChangeListener.dataListener}; 
 
-                this.dataClassChangeListener = {};
-                this.dataChangeListener = {};
+                dataInTask.indexItemAdded = addedIndex;
+
+                console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+                console.log(dataInTask);
+
+                
+
+                this.DataChangeListener.classChangeListener = {};
+                this.DataChangeListener.dataListener = {};
+                this.DataChangeListener.dataAddedIndex = '';
             }
+            
 
         },
         async submitFormDataToDB(formType, form){
