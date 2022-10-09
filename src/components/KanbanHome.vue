@@ -3,6 +3,7 @@
         <div :class="bodyDarkClass()">
         </div>
         <b-row class="KanbanBody">
+            {{valueFromMediator()}}
             <b-form :class="formClass()" @submit.prevent="submitTaskData()">
                 <b-icon-plus-circle title="Close" class="formTaskInput__btnClose" @click="closeForm()"></b-icon-plus-circle>
                 <!-- Title -->
@@ -290,7 +291,7 @@
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm('taskList')"></b-icon-plus-square>
                                 <span>Tasks List</span>
                             </b-col>
-                            <draggable :list="TaskListData" group="tasks">
+                            <draggable :list="TaskListData" group="tasks" @change="taskDataChange" @end="taskClassChange">
                                 <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskListData" :key="task.id">
                                     <card-task 
                                         :title="task.cardTitle" 
@@ -309,7 +310,7 @@
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm('taskInProgress')"></b-icon-plus-square>
                                 <span>In Progress</span>
                             </b-col>
-                            <draggable :list="TaskInProgressData" group="tasks">
+                            <draggable :list="TaskInProgressData" group="tasks" @change="taskDataChange" @end="taskClassChange">
                                 <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskInProgressData" :key="task.id">
                                     <card-task 
                                         :title="task.cardTitle" 
@@ -328,7 +329,7 @@
                                 <b-icon-plus-square title="Add Task" class="colTasks__btnCreateTask" @click="openForm('taskDone')"></b-icon-plus-square>
                                 <span>Task Done</span>
                             </b-col>
-                            <draggable :list="TaskDoneData" group="tasks">
+                            <draggable :list="TaskDoneData" group="tasks" @change="taskDataChange" @end="taskClassChange">
                                 <b-card-group columns class="colTasks__listTaskCard" v-for="task in TaskDoneData" :key="task.id">
                                     <card-task 
                                         :title="task.cardTitle" 
@@ -394,6 +395,8 @@ export default {
             TaskListData: [],
             TaskInProgressData: [],
             TaskDoneData: [],
+            dataClassChangeListener: {},
+            dataChangeListener: {}
         }
     },
     components:{
@@ -421,27 +424,62 @@ export default {
             this.bodyDarkOpen = this.closeInputClass[3];
             // this.clearTheForm();
         },
-        // handleDraggableComponentChange(){
-        //     console.log('Change');
-        // },
-        // inputDraggableComponentChange(value){
-        //     this.activeProps = value;
-        //     console.log(value);
-        // },
-        // getDraggableComponentData(){
-        //     return {
-        //         on: {
-        //             change: this.handleDraggableComponentChange,
-        //             input: this.inputDraggableComponentChange
-        //         },
-        //         attrs:{
-        //             wrap: true
-        //         },
-        //         props: {
-        //             value: this.activeProps
-        //         }
-        //     }
-        // },
+        taskDataChange(item){
+            // console.log(item);
+            const itemRemoved = item.removed;
+            const itemAdded = item.added;
+
+            if(itemRemoved){
+                const indexItemRemovedData = itemRemoved.oldIndex;
+                const itemRemovedData = {...itemRemoved.element};
+
+                // console.log(`Index: ${indexItemRemovedData}`);
+                // console.log(itemRemovedData);
+
+                this.dataChangeListener = {
+                    indexItemRemovedData,
+                    ...itemRemovedData
+                };
+            }
+
+            if(itemAdded){
+                const indexItemAddedData = itemAdded.newIndex;
+                const itemAddedData = {...itemAdded.element};
+
+                // console.log(`Index: ${indexItemAddedData}`);
+                // console.log(itemAddedData);
+
+                this.dataChangeListener = {
+                    indexItemAddedData,
+                    ...itemAddedData
+                };
+            }
+
+            
+        },
+        taskClassChange(event){
+            // console.log(event);
+            const fromClass = event.clone.className.split(' ')[0];
+            const toClass = event.to.parentElement.className.split(' ')[0];
+            
+            // console.log(`From class: '${fromClass}', to class: '${toClass}'`);
+            
+            this.dataClassChangeListener = {
+                fromClass,
+                toClass
+            };
+        },
+        valueFromMediator(){
+            if(this.dataClassChangeListener.fromClass){
+                console.log(this.dataClassChangeListener.fromClass);
+                console.log(this.dataClassChangeListener.toClass);
+                console.log(this.dataChangeListener);
+
+                this.dataClassChangeListener = {};
+                this.dataChangeListener = {};
+            }
+
+        },
         async submitFormDataToDB(formType, form){
 
                 if(formType === 'taskList'){
