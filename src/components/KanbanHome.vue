@@ -22,6 +22,7 @@
                         v-model="formInputData.TaskListInput.Title"
                         type="text"
                         placeholder="Card title"
+                        required
                     >
                     </b-form-input>
                     
@@ -39,6 +40,7 @@
                         v-model="formInputData.TaskInProgressInput.Title"
                         type="text"
                         placeholder="Card title"
+                        required
                     >
                     </b-form-input>
                     
@@ -56,6 +58,7 @@
                         v-model="formInputData.TaskDoneInput.Title"
                         type="text"
                         placeholder="Card title"
+                        required
                     >
                     </b-form-input>
                     
@@ -74,6 +77,7 @@
                         class="formTaskInput__cardSeverity"
                         v-model="formInputData.TaskListInput.Severity"
                         :options="taskSeverityOptions"
+                        required
                     >
                     </b-form-select>
                     
@@ -89,6 +93,7 @@
                         class="formTaskInput__cardSeverity"
                         v-model="formInputData.TaskInProgressInput.Severity"
                         :options="taskSeverityOptions"
+                        required
                     >
                     </b-form-select>
                     
@@ -104,6 +109,7 @@
                         class="formTaskInput__cardSeverity"
                         v-model="formInputData.TaskDoneInput.Severity"
                         :options="taskSeverityOptions"
+                        required
                     >
                     </b-form-select>
                     
@@ -123,6 +129,7 @@
                         v-model="formInputData.TaskListInput.Details"
                         type="text"
                         placeholder="Task Details"
+                        required
                     >
                     </b-form-input>
                     
@@ -139,6 +146,7 @@
                         v-model="formInputData.TaskInProgressInput.Details"
                         type="text"
                         placeholder="Task Details"
+                        required
                     >
                     </b-form-input>
                     
@@ -155,6 +163,7 @@
                         v-model="formInputData.TaskDoneInput.Details"
                         type="text"
                         placeholder="Task Details"
+                        required
                     >
                     </b-form-input>
                     
@@ -174,6 +183,7 @@
                         v-model="formInputData.TaskListInput.OwnerName"
                         type="text"
                         placeholder="Owner Name"
+                        required
                     >
                     </b-form-input>
                     
@@ -190,6 +200,7 @@
                         v-model="formInputData.TaskInProgressInput.OwnerName"
                         type="text"
                         placeholder="Owner Name"
+                        required
                     >
                     </b-form-input>
                     
@@ -206,6 +217,7 @@
                         v-model="formInputData.TaskDoneInput.OwnerName"
                         type="text"
                         placeholder="Owner Name"
+                        required
                     >
                     </b-form-input>
                     
@@ -225,6 +237,7 @@
                         v-model="formInputData.TaskListInput.DueDate"
                         type="date"
                         placeholder="Due Date"
+                        required
                     >
                     </b-form-input>
                     
@@ -241,6 +254,7 @@
                         v-model="formInputData.TaskInProgressInput.DueDate"
                         type="date"
                         placeholder="Due Date"
+                        required
                     >
                     </b-form-input>
                     
@@ -257,6 +271,7 @@
                         v-model="formInputData.TaskDoneInput.DueDate"
                         type="date"
                         placeholder="Due Date"
+                        required
                     >
                     </b-form-input>
                     
@@ -584,6 +599,8 @@ export default {
         },
         async submitTaskData(){
             try {
+                this.closeForm();
+
                 const formType = ['taskList','taskInProgress','taskDone'];
 
                 if(this.whichFormIsOpen === ''){
@@ -620,7 +637,7 @@ export default {
             } catch (error) {
                 console.log(error);
             }
-            this.closeForm();
+            // this.closeForm();
         },
         // clearTheForm(){
         //     Object
@@ -788,10 +805,14 @@ export default {
         width: 100vw;
         background-color: #000;
         opacity: 50%;
+        transition: 0.1s ease-in-out;
     }
 
     .bodyDark--close{
-        display: none;
+        // display: none;
+        display: block;
+        opacity: 0;
+        z-index: -1;
     }
     
     .KanbanBody{
@@ -802,42 +823,45 @@ export default {
 
     .formTaskInput{
 
-        &__btnClose{
-            cursor: pointer;
-            transform: rotate(40deg);
-            color: red; 
-            position: absolute;
-            left: 90%;
-            bottom: 90%;
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-
         position: absolute;
         z-index: 5;
         top: 50%;
         left: 50%;
         -ms-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
-        background-color: #41d262;
+        background-color: #f7f7f7;
         border-radius: 0.5rem;
         padding: 3rem;
         width: 50%;
         text-align: start;
+        opacity: 100%;
+        // transition: 0.4s ease-in-out;
+        transition: 0.4s, transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
 
-        &__cardTitle,
-        &__cardSeverity,
-        &__cardDetails,
-        &__cardOwnerName,
-        &__cardDate{
-            // width: 50%;
-            // margin-left: auto;
-            // margin-right: auto;
+        &__btnClose{
+            cursor: pointer;
+            transform: rotate(40deg);
+            color: red; 
+            position: absolute;
+            left: 91%;
+            bottom: 90%;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .formTaskInput__btnSubmit{
+            margin-top: 1rem;
+            width: 100%;
         }
     }
 
     .formTaskInput--close{
-        display: none;
+        // display: none;
+        display: block;
+        opacity: 0;
+        z-index: -1;
+        -ms-transform: translate(-50%, -60%);
+        transform: translate(-50%, -60%);
     }
 
     .colProject,
