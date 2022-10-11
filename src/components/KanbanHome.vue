@@ -294,9 +294,11 @@
                     <b-icon-list-task class="colProject__iconTitle"></b-icon-list-task>
                 </b-col>
                 <b-col class="colProject__projectList">
-                    <button-project :isActive="true"></button-project>
-                    <button-project :isActive="false"></button-project>
-                    <b-button variant="success" class="colProject__buttonCreate">Create Project</b-button>
+                    <div v-for="(project, index) in ProjectListData" :key="project.id">
+                        <button-project :projectName="project.projectName" :projectIndex="index" @btn-click="changeButtonProjectFocus"></button-project>
+                        <!-- <button-project :isActive="false"></button-project> -->
+                    </div>
+                    <b-button variant="success" class="colProject__buttonCreate" @click="createProject()">Create Project</b-button>
                 </b-col>
             </b-col>
             <b-col class="colTasks" cols="10">
@@ -381,11 +383,14 @@ export default {
     name: "KanbanHome",
     data() {
         return {
+            projectActive: '',
             closeInputClass: ['formTaskInput', 'formTaskInput formTaskInput--close', 'bodyDark', 'bodyDark bodyDark--close'],
             formInputOpen: 'formTaskInput',
             bodyDarkOpen: 'bodyDark',
             whichFormIsOpen: '',
             taskSeverityOptions: ['Low','Moderate','High'],
+            ProjectListData: [],
+            isButtonProjectFocus: false,
             formInputData: {
                 TaskListInput: {
                     Title: '',
@@ -428,6 +433,38 @@ export default {
         CardTask
     },
     methods: {
+        async createProject(){
+            const response = await Swal.fire({
+                title: 'Enter your project name.',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'on'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Create project',
+                });
+
+
+            if(response.value){
+                const projectId = await db.Project.add({
+                    projectName: response.value
+                });
+                const dataFromDB = await db.Project.get(projectId);
+                this.ProjectListData.push(dataFromDB);
+            }
+        },
+        changeButtonProjectFocus(event, index){
+            const parentClassName = [...event.target.parentNode.parentNode.parentNode.children];
+            parentClassName.pop();
+            // console.log(parentClassName[index].children[0].children[0]);
+
+            parentClassName[index].children[0].children[0].classList.add("colProject__projectItem--active");
+            parentClassName.splice(index, 1)
+            parentClassName.map(el =>{
+                el.children[0].children[0].classList.remove("colProject__projectItem--active");
+            })
+
+        },
         bodyDarkClass(){
             return `${this.bodyDarkOpen}`;
         },
@@ -473,7 +510,8 @@ export default {
             
         },
         taskClassChange(event){
-            // console.log(event);
+            console.log(event);
+            console.log(event.clone);
             const fromClass = event.clone.className.split(' ')[0];
             const toClass = event.to.parentElement.className.split(' ')[0];
             
@@ -613,6 +651,7 @@ export default {
                     this.toastDone('Task list added!');
 
                     this.whichFormIsOpen = '';
+                    this.clearTheForm(this.formInputData.TaskListInput);
                 }
                 
                 if(this.whichFormIsOpen === formType[1]){
@@ -620,9 +659,8 @@ export default {
                     this.TaskInProgressData.push(dataId);
                     this.toastDone('Task in progress added!');
 
-                    // console.log(`Date ${moment(this.formInputData.TaskInProgressInput.DueDate)}`);
-
                     this.whichFormIsOpen = '';
+                    this.clearTheForm(this.formInputData.TaskInProgressInput);
                 }
                 if(this.whichFormIsOpen === formType[2]){
                     const dataId = await this.submitFormDataToDB(formType[2], this.formInputData.TaskDoneInput);
@@ -630,22 +668,20 @@ export default {
                     this.toastDone('Task done added!');
 
                     this.whichFormIsOpen = '';
+                    this.clearTheForm(this.formInputData.TaskDoneInput);
                 }
 
-                // this.clearTheForm();
 
             } catch (error) {
                 console.log(error);
             }
             // this.closeForm();
         },
-        // clearTheForm(){
-        //     Object
-        //         .keys(this.formInputData.TaskListInput)
-        //         .forEach(key =>{
-        //             this.formInputData.TaskListInput[key] = '';
-        //         })
-        // },
+        clearTheForm(formType){
+            Object.keys(formType).forEach(key =>{
+                formType[key] = '';
+            });
+        },
         async addObjectDB(TaskDB, taskId, taskTitle, taskSeverity, taskDetails, taskOwnerName, taskDueDate){
             const id = await TaskDB.add({
                 id: taskId,
@@ -663,18 +699,9 @@ export default {
 
                 if(formType === formTypeList[0]){
                     const data = this.TaskListData;
-    
-                    const alertBox = await Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
-                    });
+                    const alertBoxValue = await this.dialogDeleteConfirmation();
                     
-                    if(alertBox.isConfirmed){
+                    if(alertBoxValue){
                         const value = await this.deleteTaskDB(db.TaskList, data, id);
 
                         data.splice(data.indexOf(value), 1);
@@ -686,18 +713,9 @@ export default {
 
                 if(formType === formTypeList[1]){
                     const data = this.TaskInProgressData;
-    
-                    const alertBox = await Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
-                    });
+                    const alertBoxValue = await this.dialogDeleteConfirmation();
                     
-                    if(alertBox.isConfirmed){
+                    if(alertBoxValue){
                         const value = await this.deleteTaskDB(db.InProgress, data, id);
         
                         data.splice(data.indexOf(value), 1);
@@ -709,18 +727,9 @@ export default {
 
                 if(formType === formTypeList[2]){
                     const data = this.TaskDoneData;
-    
-                    const alertBox = await Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
-                    });
+                    const alertBoxValue = await this.dialogDeleteConfirmation();
                     
-                    if(alertBox.isConfirmed){
+                    if(alertBoxValue){
                         const value = await this.deleteTaskDB(db.TaskDone, data, id);
 
                         data.splice(data.indexOf(value), 1);
@@ -741,6 +750,18 @@ export default {
                 return el.id === id
             });
         },
+        async dialogDeleteConfirmation(){
+            const alertBox = await Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            });
+            return alertBox.isConfirmed;
+        },
         toastDone(toastText){
             Toastify({
                 text: toastText,
@@ -757,10 +778,15 @@ export default {
         this.bodyDarkOpen = this.closeInputClass[3];
         
         (async ()=>{
+            const projectListData = await db.Project.toArray();
             const taskListData = await db.TaskList.toArray();
             const taskInProgressData = await db.InProgress.toArray();
             const taskDoneData = await db.TaskDone.toArray();
             
+            projectListData.forEach(el=>{
+                this.ProjectListData.push(el);
+            })
+
             taskListData.forEach(el => {
                 this.TaskListData.push(el);
             });
@@ -900,6 +926,7 @@ export default {
 
         &__buttonCreate{
             margin-top: 1rem;
+            width: 100%;
         }
     }
 

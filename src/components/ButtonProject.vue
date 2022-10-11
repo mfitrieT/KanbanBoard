@@ -1,8 +1,9 @@
 <template>
     <div>
-        <b-col :class="btnIsActive()" @click="onClick()">
+        <b-col :class="btnIsActive()" @click="onClick($event)">
             <b-icon-card-text></b-icon-card-text>
-            Project 1
+            <!-- Project 1 -->
+            {{projectName}}
         </b-col>
     </div>
 </template>
@@ -25,14 +26,21 @@ export default {
             default(){
                 return false
             }
-        }
+        },
+        projectName: {
+            type: String,
+            required: true
+        },
+        projectIndex: {
+            type: Number
+        },
     },
     methods: {
         btnIsActive(){
             return this.btnActive ? "colProject__projectItem colProject__projectItem--active" : "colProject__projectItem"; 
         },
-        onClick(){
-            this.$emit('btn-click');
+        onClick(event){
+            this.$emit('btn-click', event, this.projectIndex);
         }
     },
 }

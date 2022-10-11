@@ -161,6 +161,11 @@ export default {
                 cursor: pointer;
             }
         }
+
+        &__taskCard:hover{
+            transition: 0.2s ease-in-out;
+            background-color: #f7f7f7;
+        }
     }
 
 </style>
