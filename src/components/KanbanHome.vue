@@ -294,7 +294,7 @@
                     <b-icon-list-task class="colProject__iconTitle"></b-icon-list-task>
                 </b-col>
                 <b-col class="colProject__projectList">
-                    <div v-for="(project, index) in ProjectListData" :key="project.id">
+                    <div v-for="(project, index) in projectListData" :key="project.id">
                         <button-project :projectName="project.projectName" :projectIndex="index" @btn-click="changeButtonProjectFocus"></button-project>
                         <!-- <button-project :isActive="false"></button-project> -->
                     </div>
@@ -389,7 +389,7 @@ export default {
             bodyDarkOpen: 'bodyDark',
             whichFormIsOpen: '',
             taskSeverityOptions: ['Low','Moderate','High'],
-            ProjectListData: [],
+            // ProjectListData: [],
             isButtonProjectFocus: false,
             formInputData: {
                 TaskListInput: {
@@ -446,11 +446,7 @@ export default {
 
 
             if(response.value){
-                const projectId = await db.Project.add({
-                    projectName: response.value
-                });
-                const dataFromDB = await db.Project.get(projectId);
-                this.ProjectListData.push(dataFromDB);
+                this.$store.dispatch('addProjectList', response);
             }
         },
         changeButtonProjectFocus(event, index){
@@ -542,7 +538,15 @@ export default {
                 if(fromClass === fromTaskClass[0] && toClass === toTaskCardClass[1]){
 
                     await this.deleteTaskDB(db.TaskList, this.TaskListData, dataInTask.id);
-                    const dataId = this.addObjectDB(db.InProgress, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate);
+                    const dataId = this.addObjectDB(
+                            db.InProgress, 
+                            dataInTask.id, 
+                            dataInTask.cardTitle, 
+                            dataInTask.severity, 
+                            dataInTask.content, 
+                            dataInTask.OwnerName, 
+                            dataInTask.DueDate)
+                        ;
                     
                     this.TaskInProgressData.push(dataId);
                     this.TaskInProgressData.pop();
@@ -553,7 +557,15 @@ export default {
                 if(fromClass === fromTaskClass[0] && toClass === toTaskCardClass[2]){
                     
                     await this.deleteTaskDB(db.TaskList, this.TaskListData, dataInTask.id);
-                    const dataId = this.addObjectDB(db.TaskDone, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    const dataId = this.addObjectDB(
+                            db.TaskDone, 
+                            dataInTask.id, 
+                            dataInTask.cardTitle, 
+                            dataInTask.severity, 
+                            dataInTask.content, 
+                            dataInTask.OwnerName, 
+                            dataInTask.DueDate
+                        )
                     this.TaskDoneData.push(dataId);
                     this.TaskDoneData.pop();
 
@@ -567,7 +579,15 @@ export default {
                 if(fromClass === fromTaskClass[1] && toClass === toTaskCardClass[0]){
 
                     await this.deleteTaskDB(db.InProgress, this.TaskListData, dataInTask.id);
-                    const dataId = this.addObjectDB(db.TaskList, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    const dataId = this.addObjectDB(
+                            db.TaskList, 
+                            dataInTask.id, 
+                            dataInTask.cardTitle, 
+                            dataInTask.severity, 
+                            dataInTask.content, 
+                            dataInTask.OwnerName, 
+                            dataInTask.DueDate
+                        )
                     this.TaskListData.push(dataId);
                     this.TaskListData.pop();
 
@@ -577,7 +597,15 @@ export default {
                 if(fromClass === fromTaskClass[1] && toClass === toTaskCardClass[2]){
 
                     await this.deleteTaskDB(db.InProgress, this.TaskListData, dataInTask.id);
-                    const dataId = this.addObjectDB(db.TaskDone, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    const dataId = this.addObjectDB(
+                            db.TaskDone, 
+                            dataInTask.id, 
+                            dataInTask.cardTitle, 
+                            dataInTask.severity, 
+                            dataInTask.content, 
+                            dataInTask.OwnerName, 
+                            dataInTask.DueDate
+                        )
                     this.TaskDoneData.push(dataId);
                     this.TaskDoneData.pop();
 
@@ -590,7 +618,15 @@ export default {
                 if(fromClass === fromTaskClass[2] && toClass === toTaskCardClass[0]){
 
                     await this.deleteTaskDB(db.TaskDone, this.TaskListData, dataInTask.id);
-                    const dataId = this.addObjectDB(db.TaskList, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    const dataId = this.addObjectDB(
+                            db.TaskList, 
+                            dataInTask.id, 
+                            dataInTask.cardTitle, 
+                            dataInTask.severity, 
+                            dataInTask.content, 
+                            dataInTask.OwnerName, 
+                            dataInTask.DueDate
+                        )
                     this.TaskListData.push(dataId);
                     this.TaskListData.pop();
 
@@ -602,7 +638,15 @@ export default {
                 if(fromClass === fromTaskClass[2] && toClass === toTaskCardClass[1]){
 
                     await this.deleteTaskDB(db.TaskDone, this.TaskListData, dataInTask.id);
-                    const dataId = this.addObjectDB(db.InProgress, dataInTask.id, dataInTask.cardTitle, dataInTask.severity, dataInTask.content, dataInTask.OwnerName, dataInTask.DueDate)
+                    const dataId = this.addObjectDB(
+                            db.InProgress, 
+                            dataInTask.id, 
+                            dataInTask.cardTitle, 
+                            dataInTask.severity, 
+                            dataInTask.content, 
+                            dataInTask.OwnerName, 
+                            dataInTask.DueDate
+                        )
                     this.TaskInProgressData.push(dataId);
                     this.TaskInProgressData.pop();
 
@@ -623,15 +667,39 @@ export default {
         async submitFormDataToDB(formType, form){
 
                 if(formType === 'taskList'){
-                    return await this.addObjectDB(db.TaskList, new Date().getTime(), form.Title, form.Severity, form.Details, form.OwnerName, form.DueDate);
+                    return await this.addObjectDB(
+                        db.TaskList, 
+                        new Date().getTime(), 
+                        form.Title, 
+                        form.Severity, 
+                        form.Details, 
+                        form.OwnerName, 
+                        form.DueDate
+                    );
                 }
 
                 if(formType === 'taskInProgress'){
-                    return await this.addObjectDB(db.InProgress, new Date().getTime(), form.Title, form.Severity, form.Details, form.OwnerName, form.DueDate);
+                    return await this.addObjectDB(
+                        db.InProgress, 
+                        new Date().getTime(), 
+                        form.Title, 
+                        form.Severity, 
+                        form.Details, 
+                        form.OwnerName, 
+                        form.DueDate
+                    );
                 }
 
                 if(formType === 'taskDone'){
-                    return await this.addObjectDB(db.TaskDone, new Date().getTime(), form.Title, form.Severity, form.Details, form.OwnerName, form.DueDate);
+                    return await this.addObjectDB(
+                        db.TaskDone, 
+                        new Date().getTime(), 
+                        form.Title, 
+                        form.Severity, 
+                        form.Details, 
+                        form.OwnerName, 
+                        form.DueDate
+                    );
                 }
 
         },
@@ -773,19 +841,27 @@ export default {
         }
         
     },
+    computed:{
+        projectListData(){
+            return this.$store.state.ProjectListData;
+        }
+    },
     mounted() {
         this.formInputOpen = this.closeInputClass[1];
         this.bodyDarkOpen = this.closeInputClass[3];
         
+        this.$store.dispatch('ProjectListInit');
+        
         (async ()=>{
-            const projectListData = await db.Project.toArray();
+            // const projectListData = await db.Project.toArray();
+
             const taskListData = await db.TaskList.toArray();
             const taskInProgressData = await db.InProgress.toArray();
             const taskDoneData = await db.TaskDone.toArray();
             
-            projectListData.forEach(el=>{
-                this.ProjectListData.push(el);
-            })
+            // projectListData.forEach(el=>{
+            //     this.ProjectListData.push(el);
+            // })
 
             taskListData.forEach(el => {
                 this.TaskListData.push(el);
