@@ -679,49 +679,6 @@ export default {
         position: relative;
     }
 
-    // .formTaskInput{
-
-    //     position: absolute;
-    //     z-index: 5;
-    //     top: 50%;
-    //     left: 50%;
-    //     -ms-transform: translate(-50%, -50%);
-    //     transform: translate(-50%, -50%);
-    //     background-color: #f7f7f7;
-    //     border-radius: 0.5rem;
-    //     padding: 3rem;
-    //     width: 50%;
-    //     text-align: start;
-    //     opacity: 100%;
-    //     // transition: 0.4s ease-in-out;
-    //     transition: 0.4s, transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
-
-    //     &__btnClose{
-    //         cursor: pointer;
-    //         transform: rotate(40deg);
-    //         color: red; 
-    //         position: absolute;
-    //         left: 91%;
-    //         bottom: 90%;
-    //         width: 1.5rem;
-    //         height: 1.5rem;
-    //     }
-
-    //     .formTaskInput__btnSubmit{
-    //         margin-top: 1rem;
-    //         width: 100%;
-    //     }
-    // }
-
-    // .formTaskInput--close{
-    //     // display: none;
-    //     display: block;
-    //     opacity: 0;
-    //     z-index: -1;
-    //     -ms-transform: translate(-50%, -60%);
-    //     transform: translate(-50%, -60%);
-    // }
-
     .colProject,
     .colTasks{
         padding: 0;
