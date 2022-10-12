@@ -6,286 +6,38 @@
             <div style="display: none;">
                 {{valueFromMediator()}}
             </div>
-            <b-form :class="formClass()" @submit.prevent="submitTaskData()">
-                <b-icon-plus-circle title="Close" class="formTaskInput__btnClose" @click="closeForm()"></b-icon-plus-circle>
-                <!-- Title -->
-                <b-form-group
-                    id="formTaskInput__groupCardTitle"
-                    class="formTaskInput__groupCardTitle"
-                    label="Card Title"
-                    label-for="formTaskInput__cardTitle"
-                    v-if="whichFormIsOpen === 'taskList'"
-                >
-                    <b-form-input
-                        id="formTaskInput__cardTitle"
-                        class="formTaskInput__cardTitle"
-                        v-model="formInputData.TaskListInput.Title"
-                        type="text"
-                        placeholder="Card title"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="formTaskInput__groupCardTitle"
-                    class="formTaskInput__groupCardTitle"
-                    label="Card Title"
-                    label-for="formTaskInput__cardTitle"
-                    v-else-if="whichFormIsOpen === 'taskInProgress'"
-                >
-                    <b-form-input
-                        id="formTaskInput__cardTitle"
-                        class="formTaskInput__cardTitle"
-                        v-model="formInputData.TaskInProgressInput.Title"
-                        type="text"
-                        placeholder="Card title"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="formTaskInput__groupCardTitle"
-                    class="formTaskInput__groupCardTitle"
-                    label="Card Title"
-                    label-for="formTaskInput__cardTitle"
-                    v-else-if="whichFormIsOpen === 'taskDone'"
-                >
-                    <b-form-input
-                        id="formTaskInput__cardTitle"
-                        class="formTaskInput__cardTitle"
-                        v-model="formInputData.TaskDoneInput.Title"
-                        type="text"
-                        placeholder="Card title"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <!-- Title -->
 
-                <!-- Severity -->
-                <b-form-group
-                    id="input-group-1"
-                    label="Severity"
-                    label-for="input-1"
-                    v-if="whichFormIsOpen === 'taskList'"
-                >
-                    <b-form-select
-                        id="input-1"
-                        class="formTaskInput__cardSeverity"
-                        v-model="formInputData.TaskListInput.Severity"
-                        :options="taskSeverityOptions"
-                        required
+            <div v-if="whichFormIsOpen === 'taskList'">
+                <!-- {{whichFormIsOpen}} -->
+                <form-input
+                    :formClass="formClass()"
+                    :taskSeverityOptions="taskSeverityOptions"
+                    @form-data="submitTaskData"
+                    @close-form="closeForm()"
                     >
-                    </b-form-select>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Severity"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskInProgress'"
-                >
-                    <b-form-select
-                        id="input-1"
-                        class="formTaskInput__cardSeverity"
-                        v-model="formInputData.TaskInProgressInput.Severity"
-                        :options="taskSeverityOptions"
-                        required
+                </form-input>
+            </div>
+            <div v-else-if="whichFormIsOpen === 'taskInProgress'">
+                <!-- {{whichFormIsOpen}} -->
+                <form-input
+                    :formClass="formClass()"
+                    :taskSeverityOptions="taskSeverityOptions"
+                    @form-data="submitTaskData"
+                    @close-form="closeForm()"
                     >
-                    </b-form-select>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Severity"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskDone'"
-                >
-                    <b-form-select
-                        id="input-1"
-                        class="formTaskInput__cardSeverity"
-                        v-model="formInputData.TaskDoneInput.Severity"
-                        :options="taskSeverityOptions"
-                        required
+                </form-input>
+            </div>
+            <div v-else-if="whichFormIsOpen === 'taskDone'">
+                <!-- {{whichFormIsOpen}} -->
+                <form-input
+                    :formClass="formClass()"
+                    :taskSeverityOptions="taskSeverityOptions"
+                    @form-data="submitTaskData"
+                    @close-form="closeForm()"
                     >
-                    </b-form-select>
-                    
-                </b-form-group>
-                <!-- Severity -->
+                </form-input>
+            </div>
 
-                <!-- Details -->
-                <b-form-group
-                    id="input-group-1"
-                    label="Task Details"
-                    label-for="input-1"
-                    v-if="whichFormIsOpen === 'taskList'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardDetails"
-                        v-model="formInputData.TaskListInput.Details"
-                        type="text"
-                        placeholder="Task Details"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Task Details"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskInProgress'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardDetails"
-                        v-model="formInputData.TaskInProgressInput.Details"
-                        type="text"
-                        placeholder="Task Details"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Task Details"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskDone'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardDetails"
-                        v-model="formInputData.TaskDoneInput.Details"
-                        type="text"
-                        placeholder="Task Details"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <!-- Details -->
-
-                <!-- Owner Name -->
-                <b-form-group
-                    id="input-group-1"
-                    label="Owner Name"
-                    label-for="input-1"
-                    v-if="whichFormIsOpen === 'taskList'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardOwnerName"
-                        v-model="formInputData.TaskListInput.OwnerName"
-                        type="text"
-                        placeholder="Owner Name"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Owner Name"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskInProgress'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardOwnerName"
-                        v-model="formInputData.TaskInProgressInput.OwnerName"
-                        type="text"
-                        placeholder="Owner Name"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Owner Name"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskDone'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardOwnerName"
-                        v-model="formInputData.TaskDoneInput.OwnerName"
-                        type="text"
-                        placeholder="Owner Name"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <!-- Owner Name -->
-
-                <!-- Due Date -->
-                <b-form-group
-                    id="input-group-1"
-                    label="Due Date"
-                    label-for="input-1"
-                    v-if="whichFormIsOpen === 'taskList'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardDate"
-                        v-model="formInputData.TaskListInput.DueDate"
-                        type="date"
-                        placeholder="Due Date"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Due Date"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskInProgress'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardDate"
-                        v-model="formInputData.TaskInProgressInput.DueDate"
-                        type="date"
-                        placeholder="Due Date"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <b-form-group
-                    id="input-group-1"
-                    label="Due Date"
-                    label-for="input-1"
-                    v-else-if="whichFormIsOpen === 'taskDone'"
-                >
-                    <b-form-input
-                        id="input-1"
-                        class="formTaskInput__cardDate"
-                        v-model="formInputData.TaskDoneInput.DueDate"
-                        type="date"
-                        placeholder="Due Date"
-                        required
-                    >
-                    </b-form-input>
-                    
-                </b-form-group>
-                <!-- Due Date -->
-
-                <b-button 
-                    class="formTaskInput__btnSubmit" 
-                    type="submit" 
-                    variant="primary" 
-                    >
-                        Submit
-                </b-button>
-            </b-form>
             
             
             <b-col class="colProject">
@@ -370,14 +122,15 @@
 </template>
 
 <script>
-import {BIconPlusCircle, BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
+import { BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
 import Swal from 'sweetalert2';
 import Toastify from 'toastify-js';
 import moment from 'moment';
 import draggable from 'vuedraggable';
 
 import db from '../assets/script/db';
-import ButtonProject from './ButtonProject.vue'
+import ButtonProject from './ButtonProject.vue';
+import FormInput from './FormInput.vue';
 import CardTask from './CardTask';
 export default {
     name: "KanbanHome",
@@ -425,12 +178,13 @@ export default {
         }
     },
     components:{
-        BIconPlusCircle,
+        // BIconPlusCircle,
         BIconListTask,
         BIconPlusSquare,
         ButtonProject,
         draggable,
-        CardTask
+        CardTask,
+        FormInput
     },
     methods: {
         async createProject(){
@@ -506,8 +260,8 @@ export default {
             
         },
         taskClassChange(event){
-            console.log(event);
-            console.log(event.clone);
+            // console.log(event);
+            // console.log(event.clone);
             const fromClass = event.clone.className.split(' ')[0];
             const toClass = event.to.parentElement.className.split(' ')[0];
             
@@ -664,17 +418,17 @@ export default {
             
 
         },
-        async submitFormDataToDB(formType, form){
+        async submitFormDataToDB(formType, formInput){
 
                 if(formType === 'taskList'){
                     return await this.addObjectDB(
                         db.TaskList, 
                         new Date().getTime(), 
-                        form.Title, 
-                        form.Severity, 
-                        form.Details, 
-                        form.OwnerName, 
-                        form.DueDate
+                        formInput.title, 
+                        formInput.severity, 
+                        formInput.details, 
+                        formInput.ownername, 
+                        formInput.duedate
                     );
                 }
 
@@ -682,11 +436,11 @@ export default {
                     return await this.addObjectDB(
                         db.InProgress, 
                         new Date().getTime(), 
-                        form.Title, 
-                        form.Severity, 
-                        form.Details, 
-                        form.OwnerName, 
-                        form.DueDate
+                        formInput.title, 
+                        formInput.severity, 
+                        formInput.details, 
+                        formInput.ownername, 
+                        formInput.duedate
                     );
                 }
 
@@ -694,17 +448,19 @@ export default {
                     return await this.addObjectDB(
                         db.TaskDone, 
                         new Date().getTime(), 
-                        form.Title, 
-                        form.Severity, 
-                        form.Details, 
-                        form.OwnerName, 
-                        form.DueDate
+                        formInput.title, 
+                        formInput.severity, 
+                        formInput.details, 
+                        formInput.ownername, 
+                        formInput.duedate
                     );
                 }
 
         },
-        async submitTaskData(){
+        async submitTaskData(taskDataInput){
             try {
+                // console.log(taskDataInput);
+
                 this.closeForm();
 
                 const formType = ['taskList','taskInProgress','taskDone'];
@@ -714,7 +470,7 @@ export default {
                 }
 
                 if(this.whichFormIsOpen === formType[0]){    
-                    const dataId = await this.submitFormDataToDB(formType[0], this.formInputData.TaskListInput);
+                    const dataId = await this.submitFormDataToDB(formType[0], taskDataInput);
                     this.TaskListData.push(dataId);
                     this.toastDone('Task list added!');
 
@@ -723,7 +479,7 @@ export default {
                 }
                 
                 if(this.whichFormIsOpen === formType[1]){
-                    const dataId = await this.submitFormDataToDB(formType[1], this.formInputData.TaskInProgressInput);
+                    const dataId = await this.submitFormDataToDB(formType[1], taskDataInput);
                     this.TaskInProgressData.push(dataId);
                     this.toastDone('Task in progress added!');
 
@@ -731,7 +487,7 @@ export default {
                     this.clearTheForm(this.formInputData.TaskInProgressInput);
                 }
                 if(this.whichFormIsOpen === formType[2]){
-                    const dataId = await this.submitFormDataToDB(formType[2], this.formInputData.TaskDoneInput);
+                    const dataId = await this.submitFormDataToDB(formType[2], taskDataInput);
                     this.TaskDoneData.push(dataId);
                     this.toastDone('Task done added!');
 
@@ -923,48 +679,48 @@ export default {
         position: relative;
     }
 
-    .formTaskInput{
+    // .formTaskInput{
 
-        position: absolute;
-        z-index: 5;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-        background-color: #f7f7f7;
-        border-radius: 0.5rem;
-        padding: 3rem;
-        width: 50%;
-        text-align: start;
-        opacity: 100%;
-        // transition: 0.4s ease-in-out;
-        transition: 0.4s, transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    //     position: absolute;
+    //     z-index: 5;
+    //     top: 50%;
+    //     left: 50%;
+    //     -ms-transform: translate(-50%, -50%);
+    //     transform: translate(-50%, -50%);
+    //     background-color: #f7f7f7;
+    //     border-radius: 0.5rem;
+    //     padding: 3rem;
+    //     width: 50%;
+    //     text-align: start;
+    //     opacity: 100%;
+    //     // transition: 0.4s ease-in-out;
+    //     transition: 0.4s, transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
 
-        &__btnClose{
-            cursor: pointer;
-            transform: rotate(40deg);
-            color: red; 
-            position: absolute;
-            left: 91%;
-            bottom: 90%;
-            width: 1.5rem;
-            height: 1.5rem;
-        }
+    //     &__btnClose{
+    //         cursor: pointer;
+    //         transform: rotate(40deg);
+    //         color: red; 
+    //         position: absolute;
+    //         left: 91%;
+    //         bottom: 90%;
+    //         width: 1.5rem;
+    //         height: 1.5rem;
+    //     }
 
-        .formTaskInput__btnSubmit{
-            margin-top: 1rem;
-            width: 100%;
-        }
-    }
+    //     .formTaskInput__btnSubmit{
+    //         margin-top: 1rem;
+    //         width: 100%;
+    //     }
+    // }
 
-    .formTaskInput--close{
-        // display: none;
-        display: block;
-        opacity: 0;
-        z-index: -1;
-        -ms-transform: translate(-50%, -60%);
-        transform: translate(-50%, -60%);
-    }
+    // .formTaskInput--close{
+    //     // display: none;
+    //     display: block;
+    //     opacity: 0;
+    //     z-index: -1;
+    //     -ms-transform: translate(-50%, -60%);
+    //     transform: translate(-50%, -60%);
+    // }
 
     .colProject,
     .colTasks{

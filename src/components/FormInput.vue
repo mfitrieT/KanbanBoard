@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-form :class="this.formClass" @submit.prevent="submitTaskData()">
+        <b-form :class="formClass" @submit.prevent="submitTaskData()">
             <b-icon-plus-circle title="Close" class="formTaskInput__btnClose" @click="closeForm()"></b-icon-plus-circle>
             <!-- Title -->
             <b-form-group
@@ -12,9 +12,10 @@
                 <b-form-input
                     id="formTaskInput__cardTitle"
                     class="formTaskInput__cardTitle"
-                    v-model="propTaskListInputTitle"
+                    v-model="taskInput.title"
                     type="text"
                     placeholder="Card title"
+                    required
                 >
                 </b-form-input>
                 
@@ -30,8 +31,9 @@
                 <b-form-select
                     id="input-1"
                     class="formTaskInput__cardSeverity"
-                    v-model="formInputData.TaskListInput.Severity"
-                    :options="this.taskSeverityOptions"
+                    v-model="taskInput.severity"
+                    :options="taskSeverityOptions"
+                    required
                 >
                 </b-form-select>
                 
@@ -47,9 +49,10 @@
                 <b-form-input
                     id="input-1"
                     class="formTaskInput__cardDetails"
-                    v-model="formInputData.TaskListInput.Details"
+                    v-model="taskInput.details"
                     type="text"
                     placeholder="Task Details"
+                    required
                 >
                 </b-form-input>
                 
@@ -65,9 +68,10 @@
                 <b-form-input
                     id="input-1"
                     class="formTaskInput__cardOwnerName"
-                    v-model="formInputData.TaskListInput.OwnerName"
+                    v-model="taskInput.ownername"
                     type="text"
                     placeholder="Owner Name"
+                    required
                 >
                 </b-form-input>
                 
@@ -83,9 +87,10 @@
                 <b-form-input
                     id="input-1"
                     class="formTaskInput__cardDate"
-                    v-model="formInputData.TaskListInput.DueDate"
+                    v-model="taskInput.duedate"
                     type="date"
                     placeholder="Due Date"
+                    required
                 >
                 </b-form-input>
                 
@@ -100,6 +105,7 @@
                     Submit
             </b-button>
         </b-form>
+
     </div>
 </template>
 
@@ -121,60 +127,63 @@ export default {
     components: {
         BIconPlusCircle
     },
-    props: {
-        formClass: String,
-        taskSeverityOptions: Array
-    },
+    // props: {
+    //     formClass: String,
+    //     taskSeverityOptions: Array
+    // },
+    props: ['formClass','taskSeverityOptions'],
     methods: {
         closeForm(){
             this.$emit('close-form');
         },
+        submitTaskData(){
+            this.$emit('form-data', this.taskInput);
+        }
     },
-    computed: {
-        propTaskInputTitle: {
-            get (){
-                return this.taskInput.title;
-            },
-            set(value){
-                this.$emit('taskinput-title', value)
-            }
-        },
-        propTaskInputSeverity: {
-            get (){
-                return this.taskInput.severity;
-            },
-            set(value){
-                this.$emit('taskinput-severity', value)
-            }
-        },
-        propTaskInputDetails: {
-            get (){
-                return this.taskInput.details;
-            },
-            set(value){
-                this.$emit('taskinput-details', value)
-            }
-        },
-        propTaskInputOwnerName: {
-            get (){
-                return this.taskInput.ownername;
-            },
-            set(value){
-                this.$emit('taskinput-ownername', value)
-            }
-        },
-        propTaskInputDueDate: {
-            get (){
-                return this.taskInput.duedate;
-            },
-            set(value){
-                this.$emit('taskinput-duedate', value)
-            }
-        },
-    }
 }
 </script>
 
 <style lang="scss">
-    
+    .formTaskInput{
+
+        position: absolute;
+        z-index: 5;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        background-color: #f7f7f7;
+        border-radius: 0.5rem;
+        padding: 3rem;
+        width: 50%;
+        text-align: start;
+        opacity: 100%;
+        // transition: 0.4s ease-in-out;
+        transition: 0.4s, transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+
+        &__btnClose{
+            cursor: pointer;
+            transform: rotate(40deg);
+            color: red; 
+            position: absolute;
+            left: 91%;
+            bottom: 90%;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .formTaskInput__btnSubmit{
+            margin-top: 1rem;
+            width: 100%;
+        }
+    }
+
+    .formTaskInput--close{
+        // display: none;
+        display: block;
+        opacity: 0;
+        z-index: -1;
+        -ms-transform: translate(-50%, -60%);
+        transform: translate(-50%, -60%);
+    }
 </style>
