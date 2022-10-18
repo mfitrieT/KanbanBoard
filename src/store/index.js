@@ -22,6 +22,14 @@ export default new Vuex.Store({
     },
     addProjectListData(state, dataFromDB){
       state.ProjectListData.push(dataFromDB);
+    },
+    deleteProjectData(state, projectID){
+      const projectData = state.ProjectListData.find((el)=>{
+        return el.id === projectID
+      });
+
+      state.ProjectListData.splice(state.ProjectListData.indexOf(projectData), 1);
+
     }
   },
   // can do async in actions
@@ -39,6 +47,10 @@ export default new Vuex.Store({
         const dataFromDB = await db.Project.get(projectId);
 
         commit('addProjectListData', dataFromDB);
+    },
+    async deleteProject({commit}, projectID){
+      await db.Project.delete(projectID);
+      commit('deleteProjectData', projectID);
     }
   },
   modules: {

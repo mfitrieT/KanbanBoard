@@ -27,6 +27,9 @@ export default {
                 return false
             }
         },
+        projectID: {
+            type: Number
+        },
         projectName: {
             type: String,
             required: true
@@ -40,7 +43,7 @@ export default {
             return this.btnActive ? "colProject__projectItem colProject__projectItem--active" : "colProject__projectItem"; 
         },
         onClick(event){
-            this.$emit('btn-click', event, this.projectIndex);
+            this.$emit('btn-click', event, this.projectIndex, this.projectID);
         }
     },
 }

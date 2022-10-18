@@ -132,8 +132,10 @@ export default {
             }
 
             .colTasks__cardDescription{
-                max-height: 4rem;
+                max-height: 5rem;
                 text-align: start;
+                overflow: auto;
+                padding: 0 0.5rem 0 0.5rem;
             }
 
             .colTasks__cardOwner{

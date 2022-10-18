@@ -47,10 +47,11 @@
                 </b-col>
                 <b-col class="colProject__projectList">
                     <div v-for="(project, index) in projectListData" :key="project.id">
-                        <button-project :projectName="project.projectName" :projectIndex="index" @btn-click="changeButtonProjectFocus"></button-project>
+                        <button-project :projectID="project.id" :projectName="project.projectName" :projectIndex="index" @btn-click="changeButtonProjectFocus"></button-project>
                         <!-- <button-project :isActive="false"></button-project> -->
                     </div>
                     <b-button variant="success" class="colProject__buttonCreate" @click="createProject()">Create Project</b-button>
+                    <b-button variant="danger" class="colProject__buttonCreate" @click="deleteProject()">Delete Project</b-button>
                 </b-col>
             </b-col>
             <b-col class="colTasks" cols="10">
@@ -136,7 +137,7 @@ export default {
     name: "KanbanHome",
     data() {
         return {
-            projectActive: '',
+            projectActiveDB: '',
             closeInputClass: ['formTaskInput', 'formTaskInput formTaskInput--close', 'bodyDark', 'bodyDark bodyDark--close'],
             formInputOpen: 'formTaskInput',
             bodyDarkOpen: 'bodyDark',
@@ -203,16 +204,36 @@ export default {
                 this.$store.dispatch('addProjectList', response);
             }
         },
-        changeButtonProjectFocus(event, index){
+        async deleteProject(){
+            if(this.projectActiveDB){
+                const alertDelete = await this.dialogDeleteConfirmation();
+
+                if(alertDelete){
+                    // console.log(this.projectActiveDB);
+                    await this.$store.dispatch('deleteProject', this.projectActiveDB);
+                    // console.log(`Project ${this.projectActiveDB} successfully deleted!`);
+                }else{
+                    return;
+                }
+
+            }
+        },
+        changeButtonProjectFocus(event, index, projectID){
             const parentClassName = [...event.target.parentNode.parentNode.parentNode.children];
+            
+            // To remove element 'Create Project button' and 'Delete Project button'
             parentClassName.pop();
-            // console.log(parentClassName[index].children[0].children[0]);
+            parentClassName.pop();
+            // To remove element 'Create Project button' and 'Delete Project button'
 
             parentClassName[index].children[0].children[0].classList.add("colProject__projectItem--active");
             parentClassName.splice(index, 1)
             parentClassName.map(el =>{
                 el.children[0].children[0].classList.remove("colProject__projectItem--active");
-            })
+            });
+            // console.log(`Current Project ID is: ${projectID}`);
+
+            this.projectActiveDB = projectID;
 
         },
         bodyDarkClass(){
@@ -229,7 +250,6 @@ export default {
         closeForm(){
             this.formInputOpen = this.closeInputClass[1];
             this.bodyDarkOpen = this.closeInputClass[3];
-            // this.clearTheForm();
         },
         formatDate(taskDate){
             return moment(taskDate).format("MMM Do YY");
