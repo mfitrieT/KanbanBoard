@@ -40,22 +40,11 @@
 
             
             
-            <b-col class="colProject">
-                <b-col class="colProject__title">
+            <b-col class="colTasks">
+                <b-col class="colTasks__header">
                     Kanban
-                    <b-icon-list-task class="colProject__iconTitle"></b-icon-list-task>
+                <b-icon-list-task class="colTasks__iconTitle"></b-icon-list-task>
                 </b-col>
-                <b-col class="colProject__projectList">
-                    <div v-for="(project, index) in projectListData" :key="project.id">
-                        <button-project :projectID="project.id" :projectName="project.projectName" :projectIndex="index" @btn-click="changeButtonProjectFocus"></button-project>
-                        <!-- <button-project :isActive="false"></button-project> -->
-                    </div>
-                    <b-button variant="success" class="colProject__buttonCreate" @click="createProject()">Create Project</b-button>
-                    <b-button variant="danger" class="colProject__buttonCreate" @click="deleteProject()">Delete Project</b-button>
-                </b-col>
-            </b-col>
-            <b-col class="colTasks" cols="10">
-                <b-col class="colTasks__header">Project 1</b-col>
                 <b-col class="colTasks__taskActivity">
                     <b-row style="width: 100%" class="colTasks__taskComponent">
                         <b-col class="colTasks__taskList">
@@ -123,14 +112,13 @@
 </template>
 
 <script>
-import { BIconListTask, BIconPlusSquare} from 'bootstrap-vue'
+import { BIconPlusSquare} from 'bootstrap-vue'
 import Swal from 'sweetalert2';
 import Toastify from 'toastify-js';
 import moment from 'moment';
 import draggable from 'vuedraggable';
 
 import db from '../assets/script/db';
-import ButtonProject from './ButtonProject.vue';
 import FormInput from './FormInput.vue';
 import CardTask from './CardTask';
 export default {
@@ -180,62 +168,12 @@ export default {
     },
     components:{
         // BIconPlusCircle,
-        BIconListTask,
         BIconPlusSquare,
-        ButtonProject,
         draggable,
         CardTask,
         FormInput
     },
     methods: {
-        async createProject(){
-            const response = await Swal.fire({
-                title: 'Enter your project name.',
-                input: 'text',
-                inputAttributes: {
-                    autocapitalize: 'on'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Create project',
-                });
-
-
-            if(response.value){
-                this.$store.dispatch('addProjectList', response);
-            }
-        },
-        async deleteProject(){
-            if(this.projectActiveDB){
-                const alertDelete = await this.dialogDeleteConfirmation();
-
-                if(alertDelete){
-                    // console.log(this.projectActiveDB);
-                    await this.$store.dispatch('deleteProject', this.projectActiveDB);
-                    // console.log(`Project ${this.projectActiveDB} successfully deleted!`);
-                }else{
-                    return;
-                }
-
-            }
-        },
-        changeButtonProjectFocus(event, index, projectID){
-            const parentClassName = [...event.target.parentNode.parentNode.parentNode.children];
-            
-            // To remove element 'Create Project button' and 'Delete Project button'
-            parentClassName.pop();
-            parentClassName.pop();
-            // To remove element 'Create Project button' and 'Delete Project button'
-
-            parentClassName[index].children[0].children[0].classList.add("colProject__projectItem--active");
-            parentClassName.splice(index, 1)
-            parentClassName.map(el =>{
-                el.children[0].children[0].classList.remove("colProject__projectItem--active");
-            });
-            // console.log(`Current Project ID is: ${projectID}`);
-
-            this.projectActiveDB = projectID;
-
-        },
         bodyDarkClass(){
             return `${this.bodyDarkOpen}`;
         },
@@ -617,27 +555,15 @@ export default {
         }
         
     },
-    computed:{
-        projectListData(){
-            return this.$store.state.ProjectListData;
-        }
-    },
     mounted() {
         this.formInputOpen = this.closeInputClass[1];
         this.bodyDarkOpen = this.closeInputClass[3];
-        
-        this.$store.dispatch('ProjectListInit');
-        
+                
         (async ()=>{
-            // const projectListData = await db.Project.toArray();
-
+            
             const taskListData = await db.TaskList.toArray();
             const taskInProgressData = await db.InProgress.toArray();
             const taskDoneData = await db.TaskDone.toArray();
-            
-            // projectListData.forEach(el=>{
-            //     this.ProjectListData.push(el);
-            // })
 
             taskListData.forEach(el => {
                 this.TaskListData.push(el);
@@ -699,44 +625,8 @@ export default {
         position: relative;
     }
 
-    .colProject,
     .colTasks{
         padding: 0;
-    }
-
-    .colProject{
-        // background-color: yellow;
-        // border-color: var(--green);
-        
-        &__title,
-        &__projectList{
-            border: 1px solid var(--softBorderColor);
-        }
-
-        &__title{
-            // background-color: red;
-            height: 10vh;
-            padding: 1rem;
-            font-weight: 700;
-            font-size: 1.5rem;
-            border-bottom: 0;
-        }
-
-        &__iconTitle{
-            color: var(--lightGreen);
-        }
-
-        &__projectList{
-            // background-color: aqua;
-            height: 90vh;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-        }
-
-        &__buttonCreate{
-            margin-top: 1rem;
-            width: 100%;
-        }
     }
 
 
@@ -748,14 +638,19 @@ export default {
             background-color: #fff;
             height: 10vh;
             padding: 1rem;
+            padding-left: 2rem;
             text-align: start;
             font-size: 1.5rem;
             font-weight: 600;
             border-bottom: 1px solid var(--softBorderColor);
         }
+
+        &__iconTitle{
+            color: var(--lightGreen);
+        }
         
         &__taskActivity{
-            // background-color: bisque;
+            padding: 0 1.5rem 0 1.5rem;
         }
 
         &__taskComponent{
